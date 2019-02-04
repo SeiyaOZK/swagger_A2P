@@ -1,0 +1,124 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "A2P & Bots Gw API",
+    "version": "1.0.0",
+    "description": "This document describes the API that can be used by apps, bots and services in order to interact with the A2P & Bots GW.\n\nThe A2P & Bots Gateway have different types of authentication schemes depending on request types.For Apps APIs features two authentication schemes, Basic Authentication Scheme and Digest Access Authentication Scheme. The Digest Authentication Scheme is always enabled and cannot be disabled. The Basic Authentication Scheme availability is configurable.For RCS and A2P APIs features is used OAuth 2.0 Bearer Token scheme.For Facebook Bot APIs the access token should appended to the URL query string, as defined in Facebook Messenger Platform"
+  },
+  "servers": [
+    {
+      "url": "https://hoge.jp",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/a2p/accounts/subscribers/list": {
+      "get": {
+        "tags": [
+          "A2P Accounts API"
+        ],
+        "summary": "API for account operations.Get subscribers of an account.",
+        "description": "Returns the list of subscribers of an account. It writes to a stream a csv file with one contact imsuri or chatId per line.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "anonymous",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Include anonymous subscribers.",
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success Contacts fetched successfully",
+            "$ref": "#/components/schemas/AccountOverviewSimpleViewDTO"
+          },
+          "400": {
+            "description": "Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). # $ref: '#/components/schemas/ApiErrorInfo'"
+          },
+          "401": {
+            "description": "Unauthorized The request requires user authentication. # $ref: '#/components/schemas/ApiErrorInfo'"
+          },
+          "404": {
+            "description": "Account not found. # $ref: '#/components/schemas/ApiErrorInfo'"
+          },
+          "500": {
+            "description": "Internal Server Error prevents the server from processing the request. # $ref: '#/components/schemas/ApiErrorInfo'"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccountOverviewSimpleViewDTO": {
+        "description": "This resource represents a overview of featured, recommended and top subscribed chatbots.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedResultChatBotExtendedListDTO"
+          }
+        ]
+      },
+      "RCSContentMessageWithSuggestedChipList": {
+        "description": "One and only one suggestedChipList can be used together with one and only one textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage if sending a message with the suggested chip list to the user.",
+        "type": "object"
+      },
+      "PaginatedResultChatBotExtendedListDTO": {
+        "description": "This is the data model of a valid RCS message.",
+        "type": "object",
+        "oneOf": [
+          {
+            "properties": {
+              "bots": {
+                "type": "string",
+                "description": "The returned chatbots."
+              }
+            },
+            "required": [
+              "bots"
+            ]
+          },
+          {
+            "properties": {
+              "itemsReturned": {
+                "type": "integer",
+                "description": "The number of returned chatbots.",
+                "example": 20
+              }
+            },
+            "required": [
+              "itemsReturned"
+            ]
+          },
+          {
+            "properties": {
+              "startIndex": {
+                "type": "integer",
+                "description": "Number of elements \"skipped\".",
+                "example": 20
+              }
+            },
+            "required": [
+              "startIndex"
+            ]
+          },
+          {
+            "properties": {
+              "totalItems": {
+                "type": "integer",
+                "description": "The RCS geolocation push.",
+                "example": 1000
+              }
+            },
+            "required": [
+              "totalItems"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

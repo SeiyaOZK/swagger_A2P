@@ -17,7 +17,7 @@ https://store.docker.com/editions/community/docker-ce-desktop-mac
 
 認証情報は管理者に問い合わせてください。
 
-###ローカル環境でDocker立ち上げ
+### ローカル環境でDocker立ち上げ
 
 ### docker-compose.ymlがあるswaggerディレクトリまでいく
 ```

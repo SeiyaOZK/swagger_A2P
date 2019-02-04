@@ -1,8 +1,10 @@
 # The A2P & Bots Gateway
 
 ## 内容
+- https://witlab-jp.wit-software.com/docsify/#/README
+の仕様書をSwaggerベースで落とし込みます。
 - バイトくん達の専用リポジトリ
-- Swagger OPEN APIで作成
+- Swagger 3.0 OPEN APIで作成
 - Git管理はGitHub
 
 環境構築

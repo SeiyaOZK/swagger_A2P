@@ -4,11 +4,7 @@ info:
   version: "1.0.0"
   description: >-
     This document describes the API that can be used by apps, bots and services in order to interact with the A2P & Bots GW.
-
-
     The A2P & Bots Gateway have different types of authentication schemes depending on request types.For Apps APIs features two authentication schemes, Basic Authentication Scheme and Digest Access Authentication Scheme. The Digest Authentication Scheme is always enabled and cannot be disabled. The Basic Authentication Scheme availability is configurable.For RCS and A2P APIs features is used OAuth 2.0 Bearer Token scheme.For Facebook Bot APIs the access token should appended to the URL query string, as defined in Facebook Messenger Platform
-
-
 servers:
   - url: 'https://hoge.jp'
     description: Development server
@@ -50,8 +46,6 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-
-
 components:
   schemas:
     AccountOverviewSimpleViewDTO:
@@ -65,12 +59,554 @@ components:
       description: >-
         One and only one suggestedChipList can be used together with one and only one textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage if sending a message with the suggested chip list to the user.
       type: object
+    
+    AccountSimpleDTO:
+      description:  >-
+        The Account simple DTO
+      type: object
+      allOf:
+      - properties:
+          featured:
+            type: boolean
+            description: >-
+            example:  false
+          icon:
+            type: string
+            description: >-
+              The icon image url
+            minLength: 0
+            maxLength: 500
+            example: “https://www.wit-software.com/wp-content/themes/wit-software/img/mobile/favicon/favicon-160x160.png“
+          id:
+            type: integer
+            description: >-
+              The account identifier.
+            example: 123
+          name:
+            type: string
+            description: >-
+              Account name
+            minLength: 1
+            maxLength: 255
+            example: “MyBot”
+          nickname:
+            type: string
+            description: >-
+              Account nickname
+            minLength: 1
+            maxLength: 49
+            example: “@testbot”
+          verified:
+            type: boolean
+            description: >-
+            example: true
+                
+            
+     
+    ActionDTO:
+      description: >-
+        This resource represents the actionDTO sent by the chatBot
+      type: object
+      allOf:
+        - properties:
+            calendarAction:
+              description: >-
+                The calendarAction dto.
+              $ref: '#/components/schemas/CalenderActionDTO'
+            composeAction:
+              description: >-
+                The composeAction dto.
+              $ref: '#/components/schemas/ComposeActionDTO'
+            deviceAction:
+              description: >-
+                The deviceAction dto.
+              $ref: '#/components/schemas/DeviceActionDTO'
+            dialerAction:
+              description: >-
+                The dialerAction dto.
+              $ref: '#/components/schemas/DialerActionDTO'
+            displayText:
+              type: string
+              description: >-
+                The displayText field.
+              minLength: 1
+              maxLength: 25
+            mapAction:
+              description: >-
+                The mapAction dto.
+              $ref: '#/components/schemas/MapActionDTO'
+            postback:
+              description: >-
+                The postback dto.
+              $ref: '#/components/schemas/PostbackDTO'
+            settingsAction:
+              description: >-
+                The settingsAction dto.
+              $ref: '#/components/schemas/SettingsActionDTO'
+            urlAction:
+              description: >-
+                The url action dto.
+              $ref: '#/components/schemas/UrlActionDTO'
+
+    ApiErrorInfo:
+      description: >-
+        The ApiErrorInfo structure.
+      type: object
+      allOf:
+        - properties:
+            code:
+              type: string
+              description: >-
+                The code of the error.
+              example: “VALIDATION_ERROR”
+            errorMessage:
+              type: string
+              description: >-
+                The description of the error.
+              example: “rcsMessage Needs one of the following fields: textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage or stickerMessage.”
+            errors:
+              type: array
+              description: >-
+                List of errors.
+            validationErrors:
+              type: array
+              description: >-
+                List of validation errors.
+
+
+    Attachment:
+      description: >-
+        attachment object. The following can be included in the attachment object: Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.
+      type: object
+      allOf:
+        - properties:
+            payload:
+              type: Payload
+              description: >-
+                Payload of attachment
+            type:
+              type: enum
+              description: >-
+                Type of attachment, may be image, audio, video, file or template
+
+
+    AudioMessageDTO:
+      description: >-
+        This resource represents the AudioMessageDTO
+      type: object
+      allOf:
+        - properties:
+            fileMIMEType:
+              type: string
+              description: >-
+                The MIME type of the file.
+              example: “audio/aac”
+            fileName:
+              type: string
+              description: >-
+                The file name.
+              example: “audio.aac”
+            fileSize:
+              type: integer
+              description: >-
+                The size of the file.
+              example: 1231
+            fileUrl:
+              type: string
+              description: >-
+                The URL of the file.
+              example: “http://www.example.com/files/audio.aac“
+            playingLength:
+              type: integer
+              description: >-
+                The playing length of the audio.
+              example: 4535
+              
+              
+    BaseCampaignDTO:
+      description: >-
+        This resource represents the base campaign.
+      type: object
+      allOf:
+        - properties:
+            campaignFailureReason:
+              type: string
+              description: >-
+                The campaign failure Reason.
+              minLength: 0
+              maxLength: 255
+              example: “Invalid contacts”
+            campaignId:
+              type: integer
+              description: >-
+                The campaign id.
+              example: 1
+            campaignStatus:
+              type: enum
+              description: >-
+                The current status of the campaign. If you are saving a draft, you must send the value ‘DRAFT’ otherwise it should have no value when creating campaign
+            campaignType:
+              type: enum
+              description: >-
+                The campaign type.
+              example: “BULK_DELIVERY”
+            fallbackOption:
+              type: enum
+              description: >-
+                The campaign fallbackOption.
+              example: “NON_RCS_ONLY”
+            pausedReason:
+              type: enum
+              description: >-
+                The campaign paused action.
+              example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            
+
+
+
+
+
+
+    UrlActionDTO:
+      description: >-
+        The UrlAction structure.
+      type: object
+      allOf:
+        - properties:
+            openUrl:
+              description: >-
+                The structure to send a web site or app via deep linking.
+              $ref: '#/components/schemas/OpenUrlDTO'
+              
+    OpenUrlDTO:
+      description: >-
+        The structure that opens a web site or app via deep linking.
+      type: object
+      allOf:
+        - properties:
+            url:
+              type: string
+              description: >-
+                The url.
+              example: “http://www.google.com“
+              
+              
+              
+              
+    SettingsActionDTO:
+      description: >-
+        The structure for the settings action.
+      type: object
+      allOf:
+        - properties:
+            disableAnonymization:
+              description: >-
+                The structure to ask the user to disable the anonymization setting.
+              $ref: '#/components/schemas/DisableAnonymizationDTO'
+            enableDisplayedNotifications:
+              description: >-
+                The structure to ask the user to enable sending displayed notifications.
+              $ref: '#/components/schemas/EnableDisplayedNotificationsDTO'
+
+    DisableAnonymizationDTO:
+      description: >-
+        The structure to ask the user to disable the anonymization setting. The protocol doesn’t require any fields in this DTO.
+      type: object
+
+    EnableDisplayedNotificationsDTO:
+      description: >-
+        The structure to Ask the user to enable sending displayed notifications. The protocol doesn’t require any fields in this DTO.
+      type: object
+      
+
+
+
+
+
+              
+    PostbackDTO:
+      description: >-
+        The structure for the postback.
+      type: object
+      allOf:
+        - properties:
+            data:
+              type: string
+              description: >-
+                The postback info.
+              minLength: 1
+              maxLength: 2048
+              example: “set_by_chatbot”
+              
+
+
+              
+    MapActionDTO:
+      description: >-
+        The structure for the suggested actions to interact with a location on a map.
+      type: object
+      allOf:
+        - properties:
+            requestLocationPush:
+              description: >-
+                Request for a one-time geo location push.
+              $ref: '#/components/schemas/RequestLocationPushDTO'
+            showLocation:
+              description: >-
+                Show a given location on a map.
+              $ref: '#/components/schemas/ShowLocationDTO'
+              
+              
+    RequestLocationPushDTO:
+      description: >-
+        The structure to request request for a one-time geo location push. The protocol doesn’t require any fields in this DTO.
+
+      type: object
+      
+    ShowLocationDTO:
+      description: >-
+        The ShowLocation structure. Used for showing a given location on a map.
+      type: object
+      allOf:
+        - properties:
+            fallbackUrl:
+              type: string
+              description: >-
+                The fallbackUrl.
+              example: “https://www.google.com“
+            location:
+              description: >-
+                The location structure.
+              $ref: '#/components/schemas/LocationDTO'
+
+
+    LocationDTO:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            label:
+              type: string
+              description: >-
+                The label.
+              minLength: 1
+              maxLength: 100
+              example: “Googleplex”
+            latitude:
+              type: number
+              description: >-
+                The latitude.
+                example: 37.4220041
+            longitude:
+              type: number
+              description: >-
+                The longitude.
+              example: -122.0862515
+
+
+
+              
+    DialerActionDTO:
+      description: >-
+        The DialerAction structure.
+      type: object
+      allOf:
+        - properties:
+            dialEnrichedCall:
+              description: >-
+                The structure to start an Enriched Call via the user’s dialler app
+              $ref: '#/components/schemas/DialEnrichedCallDTO'
+            dialPhoneNumber:
+              description: >-
+                The structure to call a phone number via the user’s dialler app.
+              $ref: '#/components/schemas/DialPhoneNumberDTO'
+            dialVideoCall:
+              description: >-
+                The structure to start a video call via the user’s dialler app.
+              $ref: '#/components/schemas/DialVideoCallDTO'
+
+
+    DialEnrichedCallDTO:
+      description: >-
+        The structure to start an Enriched Call via the user’s dialler app
+      type: object
+      allOf:
+        - properties:
+            fallbackUrl:
+              type: string
+              description: >-
+                The fallbackUrl.
+              example: “https://www.google.com“
+            phoneNumber:
+              type: string
+              description: >-
+                The phoneNumber.
+              example: “+1650253000”
+            subject:
+              type: string
+              description: >-
+                The subject.
+              minLength: 0
+              maxLength: 60
+              example: “The optional subject for the enriched call.”
+              
+              
+    DialPhoneNumberDTO:
+      description: >-
+        The structure to provide the call to a phone number via the user’s dialler app.
+      type: object
+      allOf:
+        - properties:
+            fallbackUrl:
+              type: string
+              description: >-
+                The fallbackUrl.
+              example: “https://www.google.com“
+            phoneNumber:
+              type: string
+              description: >-
+                The phoneNumber.
+              example: “+1650253000”
+              
+              
+    DialVideoCallDTO:
+      description: >-
+        The structure to start a video call via the user’s dialler app.
+      type: object
+      allOf:
+        - properties:
+            fallbackUrl:
+              type: string
+              description: >-
+                The fallbackUrl.
+              example: “https://www.google.com“
+            phoneNumber:
+              type: string
+              description: >-
+                The phoneNumber.
+              example: “+1650253000”
+              
+              
+    
+    DeviceActionDTO:
+      description: >-
+        The DeviceAction structure
+      type: object
+      allOf:
+        - properties:
+            requestDeviceSpecifics:
+              description: >-
+                request for a one-time share of device specifics (device model, operating system version, messaging client identifier and version, and remaining battery charge in minutes)
+              $ref: '#/components/schemas/RequestDeviceSpecificsDTO'
+    
+    
+    ComposeActionDTO:
+      description:  >-
+        The ComposeAction DTO
+      type: object
+      allOf:
+        - properties:
+            composeRecordingMessage:
+              description:  >-
+                Compose a draft message and start recording audio or video.
+              $ref: '#/components/schemas/ComposeRecordingMessageDTO'
+            composeTextMessage:
+              description:  >-
+                Compose a draft text message.
+              $ref: '#/components/schemas/ComposeTextMessageDTO'
+              
+              
+    ComposeRecordingMessageDTO:
+      description: >-
+        The ComposeRecordingMessage structure
+      type: object
+      allOf:
+        - properties:
+            phoneNumber:
+              type: string
+              description: >-
+                The phone Number.
+              example: “+351999900000”
+            type:
+              type: enum
+              description: >-
+                The compose type.
+              example: “AUDIO”
+              
+              
+    ComposeTextMessageDTO:
+      description: >-
+        The ComposeTextMessage structure
+      type: object
+      allOf:
+        - properties:
+            phoneNumber:
+              type: string
+              description: >-
+                The phone Number.
+              example: “+351999900000”
+            text:
+              type: string
+              description: >-
+                text
+              minLength: 1
+              maxLength: 100
+              example: “text to send”
+              
+      
+    CalenderActionDTO:
+      description: >-
+        The CalendarAction DTO
+      type: object
+      allOf:
+        - properties:
+            createCalendarEvent:
+              allOf:
+                - $ref: '#/components/schemas/CreateCalendarEventDTO'
+                
+    CreateCalendarEventDTO:
+      description: >-
+        Creates a new event on the user’s calendar
+      type: object
+      allOf:
+        - properties:
+            description:
+              type: string
+              description: >-
+                The description.
+              minLength: 1
+              maxLength: 500
+              example: “GSG review meeting”
+            endTime:
+              type: string
+              description: >-
+                The endTime.
+              example: “2017-03-14T23:59:59Z”
+            fallbackUrl:
+              type: string
+              description: >-
+                The fallbackUrl.
+              example:  “http://wit.software.com/event“
+            startTime:
+              type: string
+              description: >-
+                The startTime.
+              example:  “2017-03-14T00:00:00Z”
+            title:
+              type: string
+              description: >-
+                The title.
+              minLength:  1
+              maxLength:  100
+              example:  “Meeting”
+              
+      
 
     PaginatedResultChatBotExtendedListDTO:
       description: >-
         This is the data model of a valid RCS message.
       type: object
-      oneOf:
+      allOf:
         - properties:
             bots:
               # $ref: '#/components/schemas/ChatBotExtendedListDTO'

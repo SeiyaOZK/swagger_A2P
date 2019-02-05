@@ -4,22 +4,20 @@ info:
   version: "1.0.0"
   description: >-
     This document describes the API that can be used by apps, bots and services in order to interact with the A2P & Bots GW.
-
-
     The A2P & Bots Gateway have different types of authentication schemes depending on request types.For Apps APIs features two authentication schemes, Basic Authentication Scheme and Digest Access Authentication Scheme. The Digest Authentication Scheme is always enabled and cannot be disabled. The Basic Authentication Scheme availability is configurable.For RCS and A2P APIs features is used OAuth 2.0 Bearer Token scheme.For Facebook Bot APIs the access token should appended to the URL query string, as defined in Facebook Messenger Platform
-
-
 servers:
   - url: 'https://hoge.jp'
     description: Development server
 
 paths:
+  # リストのパス
   /a2p/accounts/subscribers/list:
     get:
       tags:
         - A2P Accounts API
       summary: >-
-        API for account operations.Get subscribers of an account.
+        Get subscribers of an account.
+        API for account operations.
       description: >-
         Returns the list of subscribers of an account. It writes to a stream a csv file with one contact imsuri or chatId per line.
       parameters:
@@ -50,13 +48,740 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # キャンペーンのパス
+  /a2p/campaigns:
+    post:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Create new campaign.
+        API for Campaigns management operations.
+      description: >-
+         Creates a new campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server. Returns the identifier for the created campaign. The campaign creation is limited to the configured account max campaigns per day, per week and per month.
+      responses:
+        '200':
+          description: >-
+            Success Request processed successfully.
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+
+# キャンペーンリスト
+  /a2p/campaign{}:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
+      description: >-
+         Returns the campaigns filtered by the accountId.
+      responses:
+        '200':
+          description: >-
+            Success Contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # アプデキャンペーン
+  /a2p/campaigns/campaignId: #/a2p/campaigns/{campaignId} ←こっちが正しいよ
+    post:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Update campaign.
+        API for account operations.Get subscribers of an account.
+      description: >-
+        Update a campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server.This API method is only available to Draft campaigns.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '200':
+          description: >-
+            Success: Request processed successfully.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'            
+
+    # Getキャンペーン
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
+      description: >-
+         Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+     
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # ディレート
+  /a2p/campaign:
+    delete:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
+      description: >-
+         Returns the campaigns filtered by the accountId.
+      responses:
+        '200':
+          description: >-
+           Success draft campaign deleted successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # キャンペーンコンタクト
+  /a2p/campaigns/{{campaignId}}/contacts:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Returns the campaign’s contact.
+        The campaign id.
+      description: >-
+         Returns the campaign’s statistics.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+    # キャンペーンスタティスティックス
+  /a2p/campaigns/campaigns/{campaignId}/statistics:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Delete draft campaigns.
+      description: >-
+         Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # ゲットキャンペーン
+  /a2p/campaigns/campaigns/{campaignId}:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Returns the campaign identified by the campaignId.
+      description: >-
+         Returns the campaign identified by the campaignId.
+         The id of the campaign to fetch the status.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO　fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # セットキャンペーン
+  /a2p/campaigns/{campaignId}/status:
+    put:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Modifies the campaign status to the received campaignStatus parameter, if possible. Returns the campaign’s resulting status.
+      description: >-
+         Modifies the campaign status to the received campaignStatus parameter, if possible. Returns the campaign’s resulting status.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s status updated successfully.
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+    # アップロードファイル
+  /a2p/files:
+    post:
+      tags:
+        - A2P Files API
+      summary: >-
+        API for file management operations.
+      description: >-
+         Upload a new file. There are no restrictions for the number of saved files.
+      responses:
+        '200':
+          description: >-
+            Success Request processed successfully.
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # フェイスブック
+  /bots/send:
+    post:
+      tags:
+        - Facebook Send API V1.4
+      summary: >-
+        API for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+
+      description: >-
+         Send a message to given user.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # フェイスブック メッセージ
+  # /bots/send:
+  #   post:
+  #     tags:
+  #       -Facebook Send API V1.4
+  #     summary: >-
+  #       API for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+  #       Send a message with a file to given user.
+
+  #     description: >-
+  #       Send a message with a file to given user.
+  #     responses:
+  #       '200':
+  #         description: >-
+  #           Success
+  #         # $ref: '#/components/schemas/Identifier'
+  #       '400':
+  #         description: >-
+  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  #           # $ref: '#/components/schemas/Identifier'
+  #       '401':
+  #         description: >-
+  #           Unauthorized The request requires user authentication.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '500':
+  #         description: >-
+  #           Internal Server Error prevents the server from processing the request.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+            
+      # フェイスブック メッセージ
+  /facebook/bot/v2.3/message_attachments:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+        AAPI for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+
+      description: >-
+         Upload assets from URL that can be sent in messages at a later time.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+      # フェイスブック アタッチメント
+  # /facebook/bot/v2.3/message_attachments:
+  #   post:
+  #     tags:
+  #       -Facebook Send API V2.3
+  #     summary: >-
+  #       AAPI for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+
+  #     description: >-
+  #       Upload assets that can be sent in messages at a later time.
+  #     responses:
+  #       '200':
+  #         description: >-
+  #           Success
+  #         # $ref: '#/components/schemas/Identifier'
+  #       '400':
+  #         description: >-
+  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  #           # $ref: '#/components/schemas/Identifier'
+  #       '401':
+  #         description: >-
+  #           Unauthorized The request requires user authentication.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '500':
+  #         description: >-
+  #           Internal Server Error prevents the server from processing the request.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+            
+      # フェイスブック メッセ
+  /facebook/bot/v2.3/messages:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+        AAPI for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+
+      description: >-
+         Send a message to given user.
+
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # フェイスブック メッセ　ファイル
+  # /facebook/bot/v2.3/messages:
+  #   post:
+  #     tags:
+  #       -Facebook Send API V2.3
+  #     summary: >-
+  #       AAPI for bots to send messages to A2P&BotsGw. The bot should use its access token in every request as a query parameter (access_token).
+
+  #     description: >-
+  #       Send a message with a file to given user.
+
+  #     responses:
+  #       '200':
+  #         description: >-
+  #           Success
+  #         # $ref: '#/components/schemas/Identifier'
+  #       '400':
+  #         description: >-
+  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  #           # $ref: '#/components/schemas/Identifier'
+  #       '401':
+  #         description: >-
+  #           Unauthorized The request requires user authentication.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '500':
+  #         description: >-
+  #           Internal Server Error prevents the server from processing the request.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  
+  
+  # RCS Bot API おぺレーション
+  /rcs/bot/v1/botId/contactCapabilities #/rcs/bot/v1/{botId}/contactCapabilities ←こっちが正しいよ
+    get:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+      description: >-
+        This is the API to get the RCS capability of the given user’s device.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '200':
+          description: >-
+            Success OK
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            Bad Request: The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The user contact or chat ID cannot be found or the given user’s device is not RCS capabile.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Server Error 
+            # $ref: '#/components/schemas/ApiErrorInfo'  
+            
+  # オペレーション capability
+  /rcs/bot/v1/botId/files rcs/bot/v1/{botId}/files ←こっちが正しいよ
+    post:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+        This is the API to upload a file to the CDN.
+      description: >-
+        This is the API to upload a file to the CDN.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '202':
+          description: >-
+            The file upload request has been accepted. The Chatbot Platform will notify the Chatbot, via webhook, whether the file is ready for use in the communication with RCS users.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error 
+            # $ref: '#/components/schemas/ApiErrorInfo' 
+            
+   # オペレーション file
+  /rcs/bot/v1/botId/files #rcs/bot/v1/{botId}/files ←こっちが正しいよ
+    post:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+        This is the API to upload a file to the CDN.
+      description: >-
+        This is the API to upload a file to the CDN.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '202':
+          description: >-
+            The file upload request has been accepted. The Chatbot Platform will notify the Chatbot, via webhook, whether the file is ready for use in the communication with RCS users.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error 
+            # $ref: '#/components/schemas/ApiErrorInfo' 
+            
+   # オペレーション file Retrieve Info
+  /rcs/bot/v1/botId/files/fileId #rcs/bot/v1/{botId}/files/{fileId} ←こっちが正しいよ
+    get:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+        This is the API to retrieve a file’s information.
+      description: >-
+        This is the API to retrieve a file’s information.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '200':
+          description: >-
+            OK
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The file cannot be found.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
 
 
+            # $ref: '#/components/schemas/ApiErrorInfo' 
+            
+  # オペレーション Delete
+  /rcs/bot/v1/botId/files/fileId #rcs/bot/v1/{botId}/files/{fileId} ←こっちが正しいよ
+    delete:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+        This is the API to delete the file which was previously uploaded to the CDN.
+      description: >-
+        This is the API to delete the file which was previously uploaded to the CDN.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '204':
+          description: >-
+            The file has been deleted.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The file cannot be found.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error 
+            # $ref: '#/components/schemas/ApiErrorInfo' 
+            
+  #message
+  /rcs/bot/v1/botId/messages #rcs/bot/v1/{botId}/messages
+ ←こっちが正しいよ
+    post:
+      tags:
+        - RCS Bot API
+      summary: >-
+        This is the GSMA MaaP API set exposed by the A2P&BotsGw which is compliant with the GSMA RCS Universal Profile 2.0.
+        This is the API used to send messages and isTyping indications to users.
+      description: >-
+        This is the API used to send messages and isTyping indications to users.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '202':
+          description: >-
+            The request of sending message or isTyping indication is accepted by the Chatbot Platform and ready to send to the user.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The user contact or the chat ID cannot be found.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error 
+            # $ref: '#/components/schemas/ApiErrorInfo' 
+            
+            
+            
+            
+            
+            
+            
+            
+ 
+            
+            
+            
+            
+
+            
+            
 components:
   schemas:
     AccountOverviewSimpleViewDTO:
       description: >-
-        This resource represents a overview of featured, recommended and top subscribed chatbots.
+        This resource represents an overview of featured, recommended and top subscribed chatbots.
       type: object
       allOf:
         - $ref: '#/components/schemas/PaginatedResultChatBotExtendedListDTO'

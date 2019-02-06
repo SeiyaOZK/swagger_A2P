@@ -4,11 +4,7 @@ info:
   version: "1.0.0"
   description: >-
     This document describes the API that can be used by apps, bots and services in order to interact with the A2P & Bots GW.
-
-
     The A2P & Bots Gateway have different types of authentication schemes depending on request types.For Apps APIs features two authentication schemes, Basic Authentication Scheme and Digest Access Authentication Scheme. The Digest Authentication Scheme is always enabled and cannot be disabled. The Basic Authentication Scheme availability is configurable.For RCS and A2P APIs features is used OAuth 2.0 Bearer Token scheme.For Facebook Bot APIs the access token should appended to the URL query string, as defined in Facebook Messenger Platform
-
-
 servers:
   - url: 'https://hoge.jp'
     description: Development server
@@ -50,56 +46,253 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-
-
-components:
-  schemas:
-    AccountOverviewSimpleViewDTO:
+  # キャンペーンのパス
+  /a2p/campaigns:
+    post:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Create new campaign.
+        API for Campaigns management operations.
       description: >-
-        This resource represents a overview of featured, recommended and top subscribed chatbots.
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/PaginatedResultChatBotExtendedListDTO'
-
-    RCSContentMessageWithSuggestedChipList:
+         Creates a new campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server. Returns the identifier for the created campaign. The campaign creation is limited to the configured account max campaigns per day, per week and per month.
+      responses:
+        '200':
+          description: >-
+            Success Request processed successfully.
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+# キャンペーンリスト
+  /a2p/campaign{}:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
       description: >-
-        One and only one suggestedChipList can be used together with one and only one textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage if sending a message with the suggested chip list to the user.
-      type: object
-
-    PaginatedResultChatBotExtendedListDTO:
+         Returns the campaigns filtered by the accountId.
+      responses:
+        '200':
+          description: >-
+            Success Contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # アプデキャンペーン
+  /a2p/campaigns/campaignId: #/a2p/campaigns/{campaignId} ←こっちが正しいよ
+    post:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Update campaign.
+        API for account operations.Get subscribers of an account.
       description: >-
-        This is the data model of a valid RCS message.
-      type: object
-      oneOf:
-        - properties:
-            bots:
-              # $ref: '#/components/schemas/ChatBotExtendedListDTO'
-              type: string
-              description: >-
-                The returned chatbots.
-          required:
-            - bots
-        - properties:
-            itemsReturned:
-              type: integer
-              description: >-
-                The number of returned chatbots.
-              example: 20
-          required:
-            - itemsReturned
-        - properties:
-            startIndex:
-              type: integer
-              description: >-
-                Number of elements "skipped".
-              example: 20
-          required:
-            - startIndex
-        - properties:
-            totalItems:
-              type: integer
-              description: >-
-                The RCS geolocation push.
-              example: 1000
-          required:
-            - totalItems
+        Update a campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server.This API method is only available to Draft campaigns.
+      parameters:
+        - in: query
+          name: anonymous
+          schema:
+            type: boolean
+          description: Include anonymous subscribers.
+          example: true
+      responses:
+        '200':
+          description: >-
+            Success: Request processed successfully.
+          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'            
+    # Getキャンペーン
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
+      description: >-
+         Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+     
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # ディレート
+  /a2p/campaign:
+    delete:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+        API for Campaigns management operations.
+      description: >-
+         Returns the campaigns filtered by the accountId.
+      responses:
+        '200':
+          description: >-
+           Success draft campaign deleted successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+  # キャンペーンコンタクト
+  /a2p/campaigns/{{campaignId}}/contacts:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Returns the campaign’s contact.
+        The campaign id.
+      description: >-
+         Returns the campaign’s statistics.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+    # キャンペーンスタティスティックス
+  /a2p/campaigns/campaigns/{campaignId}/statistics:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Delete draft campaigns.
+      description: >-
+         Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+     # ゲットキャンペーン
+  /a2p/campaigns/campaigns/{campaignId}:
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Returns the campaign identified by the campaignId.
+      description: >-
+         Returns the campaign identified by the campaignId.
+         The id of the campaign to fetch the status.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO　fetched successfully
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/comp...

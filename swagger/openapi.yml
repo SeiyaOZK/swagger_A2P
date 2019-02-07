@@ -1053,6 +1053,87 @@ components:
               $ref: '#/components/schemas/CampaignRCSMessageDTO'
 
 
+    CampaignDTO:
+      description: >-
+        This resource represents the campaign.
+      type: object
+      allOf:
+        - properties:
+            account:
+              description: >-
+                The account simple DTO.
+              $ref: '#/components/schemas/AccountSimpleDTO'
+            campaignFailureReason:
+              type: string
+              description: >-
+                The campaign failure Reason.
+              minLength: 0
+              maxLength: 255
+              example: “Invalid contacts”
+            campaignId:
+              type: integer
+              description: >-
+                The campaign id.
+              example: 1
+            campaignStatus:
+              type: enum
+              description: >-
+                The current status of the campaign. If you are saving a draft, you must send the value ‘DRAFT’ otherwise it should have no value when creating campaign
+            campaignType:
+              type: enum
+              description: >-
+                The campaign type.
+              example: “BULK_DELIVERY”
+            fallbackOption:
+              type: enum
+              description: >-
+                The campaign fallbackOption.
+              example: “NON_RCS_ONLY”
+            pausedReason:
+              type: enum
+              description: >-
+                The campaign paused action.
+              example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            priority:
+              type: enum
+              description: >-
+                The campaign priority.
+              example: “HIGH”
+            rcsMessage:
+              description: >-
+                The campaign content DTO.
+              $ref: '#/components/schemas/CampaignRCSMessageDTO'
+            rescheduleInitDate:
+              type: string
+              description: >-
+                The campaign rescheduled date.
+            revocationTime:
+              type: integer
+              description: >-
+                The campaign revocation time.
+              example: 60
+            revokeCancelledCampaign:
+              type: boolean
+              description: >-
+                The campaign cancelled revoke option.
+              example: true
+            scheduleEndDate:
+              type: string
+              description: >-
+                Date which the campaign should end. If not set, the campaign will finish when there are no more messages to send.
+            scheduleInitDate:
+              type: string
+              description: >-
+                Date which the campaign should begin. If not defined, will be assumed the actual date plus 15 seconds
+            title:
+              type: string
+              description: >-
+                The campaign title.
+              minLength: 0
+              maxLength: 255
+              example: “Test campaign”
+
+
 
     CampaignRCSMessageDTO:
       description: >-
@@ -1093,6 +1174,372 @@ components:
               description: >-
                 The Shared Data. This can only be sent from the user to the Chatbot.
               $ref: '#/components/schemas/SharedDataDTO'
+            status:
+              type: enum
+              description: >-
+                The status of the message.
+              example: “SENT”
+            stickerMessage:
+              description: >-
+                The sticker message structure.
+              $ref: '#/components/schemas/StickerMessageDTO'
+            suggestedChipList:
+              description: >-
+                The Suggested Chip List. The Chatbot shall not send a chip list alone, it needs to be sent with one of the following structures: textMessage/audioMessage/fileMessage/geolocationPushMessage/richcardMessage.
+              $ref: '#/components/schemas/SuggestedChipListDTO'
+            suggestedResponse:
+              description: >-
+                The the Suggested Response. This can only be sent from the user to the Chatbot.
+              $ref: '#/components/schemas/SuggestedResponseDTO'
+            textMessage:
+              type: string
+              description: >-
+                This is a normal RCS text based Chat message.
+              example: “text message”
+            timestamp:
+              type: string
+              description: >-
+                This is the last date-time the message is updated.
+              example: “2019-09-26T01:46:04.868Z”
+            trafficType:
+              type: enum
+              description: >-
+                The traffic type.
+              example: “ADVERTISEMENT”
+
+    CampaignShortStatus:
+      description: >-
+        The CampaignShortStatus structure
+      type: object
+      allOf:
+        - properties:
+            campaignId:
+              type: integer
+              description: >-
+                The campaign id.
+              example: 1
+            failureReason:
+              type: string
+              description: >-
+                The campaign failure reason.
+              minLength: 0
+              maxLength: 255
+              example: “Invalid contacts”
+            revokeCancelledCampaign:
+              type: boolean
+              description: >-
+                The campaign cancelled revoke option.
+              example: true
+            status:
+              type: enum
+              description: >-
+                The campaign status. DRAFT: Campaign not ready to start and with edition option. PREPARING: campaign storing contacts in the database. WAITING: campaign scheduled and with contacts already processed. IN_PROGRESS: campaign in progress. FINISHED: campaign ended. CANCELLED: campaign cancelled. FAILED: campaign failed because an error. DONE_SENT_WAITING_REVOCATION: campaign ended the messages sending and is waiting to start revoking. REVOKING: campaign is revoking the messages. PAUSED: Campaign in paused state.
+              example: “IN_PROGRESS”
+            timestamp:
+              type: string
+              description: >-
+                The campaign status timestamp.
+                
+    CampaignStatistics:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            avgTimeBetweenDeliveredRead:
+              type: integer
+              description: >-
+                Average time in seconds between delivered and read.
+              example: 1000
+            campaignId:
+              type: integer
+              description: >-
+                The campaign identifier.
+              example: 123
+            clickedMessages:
+              type: integer
+              description: >-
+                Number of clicked messages (meaning number of users who clicked on a campaign suggested action in the following X hours after receiving the campaign).
+              example: 1000
+            createdMessages:
+              type: integer
+              description: >-
+                Number of messages not yet sent, only created in the database.
+              example: 1000
+            deliveredMessages:
+              type: integer
+              description: >-
+                Number of delivered messages.
+              example: 1000
+            discardedContacts:
+              type: integer
+              description: >-
+                Number of discarded contacts.
+              example: 1000
+            displayedMessages:
+              type: integer
+              description: >-
+                Number of displayed messages.
+              example: 1000
+            endDate:
+              type: string
+              description: >-
+                Campaign end date.
+            failedMessages:
+              type: integer
+              description: >-
+                Number of failed messages, before being sent.
+              example: 1000
+            invalidContacts:
+              type: integer
+              description: >-
+                Number of messages with invalid contact.
+              example: 1000
+            processRevokeMessages:
+              type: integer
+              description: >-
+                Number of messages to start the revoke process.
+              example: 1000
+            processingMessages:
+              type: integer
+              description: >-
+                Number of processing messages.
+              example: 1000
+            repliedAndClickedMessages:
+              type: integer
+              description: >-
+                Number of replied and clicked messages (meaning number of users who sent a message to the brand/bot and clicked on a campaign suggested action in the following X hours after receiving the campaign).
+              example: 1000
+            repliedMessages:
+              type: integer
+              description: >-
+                Number of replied messages (meaning number of users who sent a message to the brand/bot in the following X hours after receiving the campaign).
+              example: 1000
+            revokeFailedMessages:
+              type: integer
+              description: >-
+                Number of messages that failed the revoke process.
+              example: 1000
+            revokedMessages:
+              type: integer
+              description: >-
+                Number of revoked messages.
+              example: 1000
+            revokingMessages:
+              type: integer
+              description: >-
+                Number of messages to revoke in progress.
+              example: 1000
+            sendingMessages:
+              type: integer
+              description: >-
+                Number of messages being sent.
+              example: 1000
+            sentFailedMessages:
+              type: integer
+              description: >-
+                Number of sent messages that failed.
+              example: 1000
+            sentMessages:
+              type: integer
+              description: >-
+                Number of sent messages.
+              example: 1000
+            startDate:
+              type: string
+              description: >-
+                Campaign start date.
+            totalMessages:
+              type: integer
+              description: >-
+                Total of messages.
+              example: 1000
+              
+    CampaignViewDTO:
+      description: >-
+        This resource represents a campaign view.
+      type: object
+      allOf:
+        - properties:
+            account:
+              description: >-
+              $ref: '#/components/schemas/AccountSimpleDTO'
+            campaignFailureReason:
+              type: string
+              description: >-
+                The campaign failure Reason.
+              minLength: 0
+              maxLength: 255
+              example: “Invalid contacts”
+            campaignId:
+              type: integer
+              description: >-
+                The campaign id.
+              example: 1
+            campaignStatus:
+              type: enum
+              description: >-
+                The current status of the campaign. If you are saving a draft, you must send the value ‘DRAFT’ otherwise it should have no value when creating campaign
+            campaignStatusDate:
+              type: string
+              description: >-
+            campaignType:
+              type: enum
+              description: >-
+                The campaign type.
+              example: “BULK_DELIVERY”
+            contactCSVName:
+              type: string
+              description: >-
+            contactCSVUrl:
+              type: string
+              description: >-
+            fallbackOption:
+              type: enum
+              description: >-
+                The campaign fallbackOption.
+              example: “NON_RCS_ONLY”
+            pausedReason:
+              type: enum
+              description: >-
+                The campaign paused action.
+              example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            priority:
+              type: enum
+              description: >-
+                The campaign priority.
+              example: “HIGH”
+            rcsMessage:
+              description: >-
+                The campaign content DTO.
+              $ref: '#/components/schemas/CampaignRCSMessageDTO'
+            rescheduleInitDate:
+              type: string
+              description: >-
+                The campaign rescheduled date.
+            revocationTime:
+              type: integer
+              description: >-
+                The campaign revocation time.
+              example: 60
+            revokeCancelledCampaign:
+              type: boolean
+              description: >-
+                The campaign cancelled revoke option.
+              example: true
+            scheduleEndDate:
+              type: string
+              description: >-
+                Date which the campaign should end. If not set, the campaign will finish when there are no more messages to send.
+            scheduleInitDate:
+              type: string
+              description: >-
+                Date which the campaign should begin. If not defined, will be assumed the actual date plus 15 seconds
+            scheduleInitDateNow:
+              type: boolean
+              description: >-
+            title:
+              type: string
+              description: >-
+                The campaign title.
+              minLength: 0
+              maxLength: 255
+              example: “Test campaign”
+
+
+              
+              
+              
+              
+              
+    SuggestedResponseDTO:
+      description: >-
+        The SuggestedResponse structure. Used for store the user response.
+      type: object
+      allOf:
+        - properties:
+            response:
+              description: >-
+                The response structure.
+              $ref: '#/components/schemas/ResponseDTO'
+              
+    ResponseDTO:
+      description: >-
+        The structure for the rcs response sent by the user.
+      type: object
+      allOf:
+        - properties:
+            action:
+              description: >-
+                The action structure.
+              $ref: '#/components/schemas/ActionDTO'
+            reply:
+              description: >-
+                The reply structure.
+              $ref: '#/components/schemas/ReplyDTO'
+              
+              
+    SuggestedChipListDTO:
+      description: >-
+        The SuggestedChipList structure. Used for store the suggestions list.
+      type: object
+      allOf:
+        - properties:
+            suggestions:
+              type: array
+              description: >-
+                The suggestions list.
+              $ref: '#/components/schemas/SuggestionDTO'
+              
+              
+    StickerMessageDTO:
+      description: >-
+        The StickerMessage structure. It can store a basic sticker or a enhanced sticker with the basic version of that sticker.
+      type: object
+      allOf:
+        - properties:
+            basicsticker:
+              description: >-
+                The basic sticker structure.
+              $ref: '#/components/schemas/StickerDTO'
+            enhancedSticker:
+              description: >-
+                The enhanced sticker structure.
+              $ref: '#/components/schemas/StickerDTO'
+
+    StickerDTO:
+      description: >-
+        The Sticker structure. Used to store information about the sticker that will be sent.
+      type: object
+      allOf:
+        - properties:
+            contenttype:
+              type: string
+              description: >-
+                The contentType.
+              example: “image/gif”
+            filename:
+              type: string
+              description: >-
+                The fileName.
+              example: “468fbb00-fdb8-4a08-9269-4579bc9d4565”
+            filesSize:
+              type: string
+              description: >-
+                The fileSize.
+              example: “208512”
+            subtype:
+              type: string
+              description: >-
+                The subtype.
+              example: “basic-sticker”
+            url:
+              type: string
+              description: >-
+                The url.
+            example: “https://wcs.wit-software.com/resource/animated-1/1/468fbb00-fdb8-4a08-9269-4579bc9d4565“
+
+
+
 
 
 
@@ -1135,7 +1582,20 @@ components:
               examples: “RCSAndrd-1.0”
             deviceModel:
               type: string
-              
+              description: >-
+                The device Model.
+              minLength: 1
+              maxLength: 20
+              example: “SmartPhone8”
+            platformVersion:
+              type: string
+              description: >-
+                The platform Version.
+              minLength: 1
+              maxLength: 25
+              example: “Android-7.1.2-N481G3”
+
+
       
 
 

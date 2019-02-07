@@ -10,12 +10,14 @@ servers:
     description: Development server
 
 paths:
+  # A2P Accounts API
   /a2p/accounts/subscribers/list:
     get:
       tags:
         - A2P Accounts API
       summary: >-
-        API for account operations.Get subscribers of an account.
+        Get subscribers of an account.
+        API for account operations.
       description: >-
         Returns the list of subscribers of an account. It writes to a stream a csv file with one contact imsuri or chatId per line.
       parameters:
@@ -29,7 +31,7 @@ paths:
         '200':
           description: >-
             Success Contacts fetched successfully
-          $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+          # $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
         '400':
           description: >-
             Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
@@ -46,6 +48,789 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
+  # A2P Campaigns API
+  /a2p/campaigns:
+    post:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Create new campaign.
+      description: >-
+        Creates a new campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server. Returns the identifier for the created campaign. The campaign creation is limited to the configured account max campaigns per day, per week and per month.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data: #Consumes
+            schema:
+              type: object
+              properties:
+                campaign:
+                  description: >-
+                    The campaign
+                    $ref: '#/components/schemas/BaseCampaignDTO'
+                csv:
+                  description: >-
+                    The csv file (one phone number per line)
+                  example: >-
+                    file
+              required:
+                - campaign
+          application/json: #Produces
+            schema:
+              type: object
+              properties:
+                campaign:
+                  description: >-
+                    The campaign
+                    $ref: '#/components/schemas/BaseCampaignDTO'
+                csv:
+                  description: >-
+                    The csv file (one phone number per line)
+                  example: >-
+                    file
+              required:
+                - campaign
+      responses:
+        '200':
+          description: >-
+            Success Request processed successfully.
+          # $ref: '#/components/schemas/Identifier'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # キャンペーンリスト
+    get:
+      tags:
+        - A2P Campaigns API
+      summary: >-
+        Get campaigns list.
+      description: >-
+        Returns the campaigns filtered by the accountId.
+      responses:
+        '200':
+          description: >-
+            Success Contacts fetched successfully
+          # $ref: '#/components/schemas/PaginatedResult«CampaignWithStatistics'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Account not found.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # アプデキャンペーン
+  /a2p/campaigns/{campaignId}:
+    post:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Update campaign.
+      description: >-
+        Update a campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server.This API method is only available to Draft campaigns.
+      responses:
+        '200':
+          description: >-
+            Success: Request processed successfully.
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # Getキャンペーン
+    get:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Get campaign.
+      description: >-
+        Returns the campaign identified by the campaignId.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO fetched successfully
+          # $ref: '#/components/schemas/CampaignDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # Delete draft campaign.
+    delete:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Delete draft campaign.
+      responses:
+        '200':
+          description: >-
+            Success draft campaign deleted successfully
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/Identifier'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Get campaign’s contacts.
+  /a2p/campaigns/{campaignId}/contacts:
+    get:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Get campaign’s contacts.
+      description: >-
+        Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Get campaign’s statistics.
+  /a2p/campaigns/{campaignId}/statistics:
+    get:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Get campaign’s statistics.
+      description: >-
+        Returns the campaign’s statistics.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s contacts fetched successfully
+          # $ref: '#/components/schemas/CampaignStatistics'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Get campaign status.
+  /a2p/campaigns/{campaignId}/status:
+    get:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Get campaign status.
+      description: >-
+        Returns the campaign identified by the campaignId.
+        The id of the campaign to fetch the status.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO　fetched successfully
+          # $ref: '#/components/schemas/  CampaignShortStatus'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # Sets the campaign status.
+    put:
+      tags:
+        - A2P Campaigns API
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Sets the campaign status.
+      description: >-
+        Modifies the campaign status to the received campaignStatus parameter, if possible. Returns the campaign’s resulting status.
+      responses:
+        '200':
+          description: >-
+            Success CampaignDTO’s status updated successfully.
+          # $ref: '#/components/schemas/  CampaignShortStatus'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            Not Found requested campaign.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # アップロードファイル
+  /a2p/files:
+    post:
+      tags:
+        - A2P Files API
+      summary: >-
+        Upload a new file.
+      description: >-
+        Upload a new file. There are no restrictions for the number of saved files.
+      responses:
+        '200':
+          description: >-
+            Success Request processed successfully.
+          # $ref: '#/components/schemas/UploadFileDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+      # Send Message
+  /bots/send:
+    post:
+      tags:
+        - Facebook Send API V1.4
+      summary: >-
+        Send Message
+      description: >-
+        Send a message to given user.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/    FacebookIncomingMessageResponse'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Facebook Send API V1.4
+  # /bots/send:
+  #   post:
+  #     tags:
+  #       - Facebook Send API V1.4
+  #     summary: >-
+  #       Send Message with file
+  #     description: >-
+  #       Send a message with a file to given user.
+  #     responses:
+  #       '200':
+  #         description: >-
+  #           Success
+  #         # $ref: '#/components/schemas/  FacebookIncomingMessageResponse'
+  #       '400':
+  #         description: >-
+  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '401':
+  #         description: >-
+  #           Unauthorized The request requires user authentication.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '500':
+  #         description: >-
+  #           Internal Server Error prevents the server from processing the request.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+
+  # Attachment Upload from URL
+  /facebook/bot/v2.3/message_attachments:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+        Attachment Upload from URL
+      description: >-
+        Upload assets from URL that can be sent in messages at a later time.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/FacebookMessageResponse'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+      # Attachment Upload
+      # /facebook/bot/v2.3/message_attachments:
+      #   post:
+      #     tags:
+      #       - Facebook Send API V2.3
+      #     summary: >-
+      #       Attachment Upload
+      #     description: >-
+      #       Upload assets that can be sent in messages at a later time.
+      #     responses:
+      #       '200':
+      #         description: >-
+      #           Success
+      #         # $ref: '#/components/schemas/  FacebookMessageResponse'
+      #       '400':
+      #         description: >-
+      #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      #           # $ref: '#/components/schemas/ApiErrorInfo'
+      #       '401':
+      #         description: >-
+      #           Unauthorized The request requires user authentication.
+      #           # $ref: '#/components/schemas/ApiErrorInfo'
+      #       '500':
+      #         description: >-
+      #           Internal Server Error prevents the server from processing the request.
+      #           # $ref: '#/components/schemas/ApiErrorInfo'
+
+      # Send Message
+  /facebook/bot/v2.3/messages:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+        Send Message
+      description: >-
+        Send a message to given user.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/FacebookMessageResponse'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+      # Send Message with file
+  # /facebook/bot/v2.3/messages/:
+  #   post:
+  #     tags:
+  #       - Facebook Send API V2.3
+  #     summary: >-
+  #       Send Message with file
+  #     description: >-
+  #       Send a message with a file to given user.
+  #     responses:
+  #       '200':
+  #         description: >-
+  #           Success
+  #         # $ref: '#/components/schemas/  FacebookMessageResponse'
+  #       '400':
+  #         description: >-
+  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '401':
+  #         description: >-
+  #           Unauthorized The request requires user authentication.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  #       '500':
+  #         description: >-
+  #           Internal Server Error prevents the server from processing the request.
+  #           # $ref: '#/components/schemas/ApiErrorInfo'
+
+
+  # Operations about capability
+  /rcs/bot/v1/{botId}/contactCapabilities:
+    get:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Operations about capability
+      description: >-
+        This is the API to get the RCS capability of the given user’s device.
+      responses:
+        '200':
+          description: >-
+            Success OK
+          # $ref: '#/components/schemas/  CapabilitiesResponseDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The user contact or chat ID cannot be found or the given user’s device is not RCS capabile.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Operations about files - Upload
+  /rcs/bot/v1/{botId}/files:
+    post:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Operations about files - Upload
+      description: >-
+        This is the API to upload a file to the CDN.
+      responses:
+        '202':
+          description: >-
+            The file upload request has been accepted. The Chatbot Platform will notify the Chatbot, via webhook, whether the file is ready for use in the communication with RCS users.
+          # $ref: '#/components/schemas/FileDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Server Error
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+    # Operations about files - Retrieve Info
+  /rcs/bot/v1/{botId}/files/{fileId}:
+    get:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Operations about files - Retrieve Info
+      description: >-
+        This is the API to retrieve a file’s information.
+      responses:
+        '200':
+          description: >-
+            Success OK
+          # $ref: '#/components/schemas/FileDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The user contact or chat ID cannot be found or the given user’s device is not RCS capabile.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Server Error
+            # $ref: '#/components/schemas/ApiErrorInfo'
+    # Operations about files - Delete
+    delete:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Operations about files - Delete
+      description: >-
+        This is the API to delete the file which was previously uploaded to the CDN.
+      responses:
+        '204':
+          description: >-
+            The file has been deleted.
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '404':
+          description: >-
+            The file cannot be found.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+  # Send message
+  /rcs/bot/v1/{botId}/messages:
+    post:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Send message
+      description: >-
+        This is the API used to send messages and isTyping indications to users.
+      responses:
+        '202':
+          description: >-
+            TheThe request of sending message or isTyping indication is accepted by the Chatbot Platform and ready to send to the user.
+          # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '404':
+          description: >-
+            The file cannot be found.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Server Error.
+            # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+  # Query a given message status
+  /rcs/bot/v1/{botId}/messages/{msgId}/status:
+    get:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: msgId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Query a given message status
+      description: >-
+        This is the API to query the given message status. Although the message status can be updated via webhook, this API provides an alternative optional way to check the message status. Possible message status includes ‘pending’, ‘sent’, ‘delivered’, ‘displayed’, ‘cancelled’, ‘revoked’, and ‘failed’.
+      responses:
+        '200':
+          description: >-
+            OK
+          # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '404':
+          description: >-
+            The user contact or the chat ID cannot be found.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Server Error
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+    # Operations about message status
+    put:
+      tags:
+        - RCS Bot API
+      parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: msgId
+          schema:
+            type: string
+          required: true
+      summary: >-
+        Operations about message status
+      description: >-
+        This is the API to send read notification to users for a received message or revoke a sent message.
+      responses:
+        '200':
+          description: >-
+            The status of the message has been updated by the Chatbot Platform. For ‘displayed’, a display notification will be sent to the user; for ‘cancelled’, the Chatbot Platform shall try to revoke the message if it has not been delivered to the user. NOTE, how to revoke a message is still under GSMA discussion so the Chatbot Platform may or may not support this operation.
+        '400':
+          description: >-
+            This is a bad request with invalid input, invalid object, etc.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '401':
+          description: >-
+            The request is unauthorized.
+            # $ref: '#/components/schemas/    RCSMessageWithContactInfoResponseDTO'
+        '404':
+          description: >-
+            The user contact or the chat ID cannot be found.
+            # $ref: '#/components/schemas/    RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Server Error
+            # $ref: '#/components/schemas/    RCSMessageWithContactInfoResponseDTO'
+  # 続きここから!!!
+  # RCS Chatbot Directory API:
+
+
 components:
   schemas:
     AccountOverviewSimpleViewDTO:
@@ -59,50 +844,50 @@ components:
       description: >-
         One and only one suggestedChipList can be used together with one and only one textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage if sending a message with the suggested chip list to the user.
       type: object
-    
+
     AccountSimpleDTO:
       description:  >-
         The Account simple DTO
       type: object
       allOf:
-      - properties:
-          featured:
-            type: boolean
-            description: >-
-            example:  false
-          icon:
-            type: string
-            description: >-
-              The icon image url
-            minLength: 0
-            maxLength: 500
-            example: “https://www.wit-software.com/wp-content/themes/wit-software/img/mobile/favicon/favicon-160x160.png“
-          id:
-            type: integer
-            description: >-
-              The account identifier.
-            example: 123
-          name:
-            type: string
-            description: >-
-              Account name
-            minLength: 1
-            maxLength: 255
-            example: “MyBot”
-          nickname:
-            type: string
-            description: >-
-              Account nickname
-            minLength: 1
-            maxLength: 49
-            example: “@testbot”
-          verified:
-            type: boolean
-            description: >-
-            example: true
-                
-            
-     
+        - properties:
+            featured:
+              type: boolean
+              description: >-
+              example:  false
+            icon:
+              type: string
+              description: >-
+                The icon image url
+              minLength: 0
+              maxLength: 500
+              example: “https://www.wit-software.com/wp-content/themes/wit-software/img/mobile/favicon/favicon-160x160.png“
+            id:
+              type: integer
+              description: >-
+                The account identifier.
+              example: 123
+            name:
+              type: string
+              description: >-
+                Account name
+              minLength: 1
+              maxLength: 255
+              example: “MyBot”
+            nickname:
+              type: string
+              description: >-
+                Account nickname
+              minLength: 1
+              maxLength: 49
+              example: “@testbot”
+            verified:
+              type: boolean
+              description: >-
+              example: true
+
+
+
     ActionDTO:
       description: >-
         This resource represents the actionDTO sent by the chatBot
@@ -163,7 +948,7 @@ components:
               type: string
               description: >-
                 The description of the error.
-              example: “rcsMessage Needs one of the following fields: textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage or stickerMessage.”
+              example: "rcsMessage Needs one of the following fields: textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage or stickerMessage."
             errors:
               type: array
               description: >-
@@ -172,8 +957,6 @@ components:
               type: array
               description: >-
                 List of validation errors.
-
-
     Attachment:
       description: >-
         attachment object. The following can be included in the attachment object: Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.
@@ -188,8 +971,7 @@ components:
               type: enum
               description: >-
                 Type of attachment, may be image, audio, video, file or template
-
-
+  
     AudioMessageDTO:
       description: >-
         This resource represents the AudioMessageDTO
@@ -221,8 +1003,8 @@ components:
               description: >-
                 The playing length of the audio.
               example: 4535
-              
-              
+
+
     BaseCampaignDTO:
       description: >-
         This resource represents the base campaign.
@@ -260,7 +1042,388 @@ components:
               description: >-
                 The campaign paused action.
               example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            priority:
+              type: enum
+              description: >-
+                The campaign priority.
+              example: “HIGH”
+            rcsMessage:
+              description: >-
+                The campaign content DTO.
+              $ref: '#/components/schemas/CampaignRCSMessageDTO'
+
+
+
+    CampaignRCSMessageDTO:
+      description: >-
+        The CampaignRCSMessage structure.
+      type: object
+      allOf:
+        - properties:
+            audioMessage:
+              description: >-
+                The RCS audio message.
+              $ref: '#/components/schemas/AudioMessageDTO'  
+            expiry:
+              type: string
+              description: >-
+                The is the expiry of the message. The Chatbot Platform will try to revoke this message after this expiry.
+              example: “2019-09-26T01:46:04.868Z”
+            fileMessage:
+              description: >-
+                The RCS file transfer.
+              $ref: '#/components/schemas/FileMessageDTO'
+            geolocationPushMessage:
+              description: >-
+                The RCS geolocation push.
+              $ref: '#/components/schemas/GeolocationPushMessageDTO'
+            isTyping:
+              type: enum
+              description: >-
+                The isTyping notification to be sent to the user for the given Chat, or the isTyping notification received from the user for the given Chat.
+              example: “ACTIVE”
+            msgId:
+              type: string
+              description: >-
+            richcardMessage:
+              description: >-
+                The the Rich Card JSON object.
+              $ref: '#/components/schemas/RichcardMessageDTO'
+            sharedData:
+              description: >-
+                The Shared Data. This can only be sent from the user to the Chatbot.
+              $ref: '#/components/schemas/SharedDataDTO'
+
+
+
+    SharedDataDTO:
+      description: >-
+        The SharedData structure
+      type: object
+      allOf:
+        - properties:
+            deviceSpecifics:
+              description: >-
+                Request specifics about the user’s device.
+              $ref: '#/components/schemas/DeviceSpecificsDTO'
+              
+              
+    DeviceSpecificsDTO:
+      description: >-
+        The DeviceSpecifics structure
+      type: object
+      allOf:
+        - properties:
+            batteryRemainingMinutes:
+              type: integer
+              description: >-
+                The battery Remaining Minutes.
+              example: 517
+            clientVendor:
+              type: string
+              description: >-
+                The client Vendor.
+              minLength: 1
+              maxLength: 4
+              example: “VNDR”
+            clientVersion:
+              type: string
+              description: >-
+                The client Version.
+              minLength: 1
+              maxLength: 15
+              examples: “RCSAndrd-1.0”
+            deviceModel:
+              type: string
+              
+      
+
+
+    RichcardMessageDTO:
+      description: >-
+        The structure for the richcard.
+      type: object
+      allOf:
+        - properties:
+            message:
+              description: >-
+                The message structure.
+              $ref: '#/components/schemas/MessageDTO'
+
+
+    MessageDTO:
+      description: >-
+        The structure that contains a generalPurposeCard or a generalPurposeCardCarousel.
+      type: object
+      allOf:
+        - properties:
+            generalPurposeCard:
+              description: >-
+                The generalPurposeCard structure.
+              $ref: '#/components/schemas/GeneralPurposeCardDTO'
+            generalPurposeCardCarousel:
+              description: >-
+                The generalPurposeCardCarousel structure.
+              $ref: '#/components/schemas/GeneralPurposeCardCarouselDTO'
+              
+              
+    GeneralPurposeCardCarouselDTO:
+      description: >-
+        The RCS General Purpose Card Carousel structure.
+      type: object
+      allOf:
+        - properties:
+            content:
+              type: array
+              description: >-
+                The content structure.
+              $ref: '#/components/schemas/ContentDTO'
+            layout:
+              description: >-
+                The Layout structure.
+              $ref: '#/components/schemas/LayoutDTO' 
+              
+    LayoutDTO:
+      description: >-
+        The layout of the rich card.
+      type: object
+      allOf:
+        - properties:
+            cardOrientation:
+              type: enum
+              description: >-
+                The card orientation.
+              example: “HORIZONTAL”
+            cardWidth:
+              type: enum
+              description: >-
+                The card width.
+              example: “SMALL_WIDTH”
+            imageAlignment:
+              type: enum
+              description: >-
+                The image alignment.
+              example: “LEFT”
             
+              
+    GeneralPurposeCardDTO:
+      description: >-
+        The RCS General Purpose Card structure.
+      type: object
+      allOf:
+        - properties:
+            content:
+              description: >-
+                The content structure.
+              $ref: '#/components/schemas/ContentDTO'
+            layout:
+              description: >-
+                The Layout structure.
+              $ref: '#/components/schemas/LayoutDTO'
+              
+    ContentDTO:
+      description: >-
+        The rich card Content structure
+      type: object
+      allOf:
+        - properties:
+            description:
+              type: string
+              description: >-
+                The content description.
+              minLength: 1
+              maxLength: 2000
+              example: “This is the description of the rich card.”
+            media:
+              description: >-
+                The media DTO.
+              $ref: '#/components/schemas/MediaDTO'
+            suggestions:
+              type: array
+              description: >-
+                The suggestions List.
+              $ref: '#/components/schemas/SuggestionDTO'
+            title:
+              type: string
+              description: >-
+                The content title.
+              minLength: 1
+              maxLength: 200
+              example: “This is a rich card.”
+
+              
+    SuggestionDTO:
+      description: >-
+        The Suggestion structure. Used for store the reply or action that will be sent to the user.
+      type: object
+      allOf:
+        - properties:
+            action:
+              description: >-
+                The action structure.
+              $ref: '#/components/schemas/ActionDTO'
+            reply:
+              description: >-
+                The reply structure.
+              $ref: '#/components/schemas/ReplyDTO'
+            
+    ReplyDTO:
+      description: >-
+        The structure for the reply object.
+      type: object
+      allOf:
+        - properties:
+            displayText:
+              type: string
+              description: >-
+                The displayText.
+              minLength: 1
+              maxLength: 25
+              example: “Yes”
+            postback:
+              description: >-
+                The postback structure.
+              $ref: '#/components/schemas/PostbackDTO'
+              
+              
+              
+    MediaDTO:
+      description: >-
+        The rich card media structure.
+      type: object
+      allOf:
+        - properties:
+            contentDescription:
+              type: string
+              description: >-
+                The contentDescription.
+              example: “Textual description of media content, e. g. for use with screen readers.”
+            height:
+              type: enum
+              decription: >-
+                The height.
+              example: “MEDIUM_HEIGHT”
+            mediaContentType:
+              type: string
+              description: >-
+                The mediaContentType.
+              example: “video/mp4”
+            mediaFileSize:
+              type: integer
+              description: >-
+                The mediaFileSize.
+              example: 2343243
+            mediaUrl:
+              type: string
+              description: >-
+                The mediaUrl.
+              example: “https://cdn.server/path/media.mp4“
+            thumbnailContentType:
+              type: string
+              description: >-
+                The thumbnailContentType.
+              example: “image/png”
+            thumbnailFileSize:
+              type: integer
+              description: >-
+                The thumbnailFileSize.
+              example: 1213
+            thumbnailUrl:
+              type: string
+              description: >-
+                The thumbnailUrl.
+              example: “https://cdn.server/path/media.png“
+              
+              
+            
+    GeolocationPushMessageDTO:
+      description: >-
+        The geolocation push to be sent via RCS.
+      type: object
+      allOf:
+        - properties:
+            expiry:
+              type: string
+              description: >-
+                This is an absolute date at which time the recipient is no longer permitted to possess the location information.
+              example: “2017-09-26T01:46:04.868Z”
+            label:
+              type: string
+              description: >-
+                This can be used to tag the nature of the location.
+              minLength: 0
+              maxLength: 200
+              example: “meeting location”
+            pos:
+              type: string
+              description: >-
+                This is the coordinates (latitude, longitude)
+              example: “26.1181289 -80.1283921”
+            radius:
+              type: number
+              description: >-
+                The radius of the circle will be represented in meters.
+              example: 10.0
+            timeOffset:
+              type: integer
+              description: >-
+                This is the time zone where the location information was pushed, expressed as the number of minutes away from UTC.
+              example: -300
+            timestamp:
+              type: string
+              description: >-
+                This is the time when the location information was pushed.
+              example: “2017-09-26T01:46:04.868Z”
+
+              
+            
+
+    FileMessageDTO:
+      description: >-
+        The RCS file transfer.
+      type: object
+      allOf:
+        - properties:
+            fileMIMEType:
+              type: string
+              description: >-
+                The MIME type of the file.
+              example: “image/jpeg”
+            fileName:
+              type: string
+              description: >-
+                The file name.
+              example: “file.jpg”
+            fileSize:
+              type: integer
+              description: >-
+                The size of the file.
+              example: 1234567
+            fileUrl:
+              type: string
+              description: >-
+                The URL of the file.
+              example: “http://www.example.com/files/file.jpg“
+            thumbnailFileName:
+              type: string
+              description: >-
+                The file name of the thumbnail.
+              example: “test.jpg”
+            thumbnailFileSize:
+              type: integer
+              description: >-
+                The size of the thumbnail.
+              example: 1234
+            thumbnailMIMEType:
+              type: string
+              description: >-
+                The MIME type of the thumbnail.
+              example: “image/jpeg”
+            thumbnailUrl:
+              type: string
+              description: >-
+                The URL of the thumbnail.
+              example: “http://www.example.com/files/test.jpg“
 
 
 
@@ -277,7 +1440,7 @@ components:
               description: >-
                 The structure to send a web site or app via deep linking.
               $ref: '#/components/schemas/OpenUrlDTO'
-              
+
     OpenUrlDTO:
       description: >-
         The structure that opens a web site or app via deep linking.
@@ -289,10 +1452,10 @@ components:
               description: >-
                 The url.
               example: “http://www.google.com“
-              
-              
-              
-              
+
+
+
+
     SettingsActionDTO:
       description: >-
         The structure for the settings action.
@@ -317,13 +1480,13 @@ components:
       description: >-
         The structure to Ask the user to enable sending displayed notifications. The protocol doesn’t require any fields in this DTO.
       type: object
-      
 
 
 
 
 
-              
+
+
     PostbackDTO:
       description: >-
         The structure for the postback.
@@ -337,10 +1500,10 @@ components:
               minLength: 1
               maxLength: 2048
               example: “set_by_chatbot”
-              
 
 
-              
+
+
     MapActionDTO:
       description: >-
         The structure for the suggested actions to interact with a location on a map.
@@ -355,14 +1518,13 @@ components:
               description: >-
                 Show a given location on a map.
               $ref: '#/components/schemas/ShowLocationDTO'
-              
-              
+
+
     RequestLocationPushDTO:
       description: >-
         The structure to request request for a one-time geo location push. The protocol doesn’t require any fields in this DTO.
-
       type: object
-      
+
     ShowLocationDTO:
       description: >-
         The ShowLocation structure. Used for showing a given location on a map.
@@ -405,7 +1567,7 @@ components:
 
 
 
-              
+
     DialerActionDTO:
       description: >-
         The DialerAction structure.
@@ -449,8 +1611,8 @@ components:
               minLength: 0
               maxLength: 60
               example: “The optional subject for the enriched call.”
-              
-              
+
+
     DialPhoneNumberDTO:
       description: >-
         The structure to provide the call to a phone number via the user’s dialler app.
@@ -467,8 +1629,8 @@ components:
               description: >-
                 The phoneNumber.
               example: “+1650253000”
-              
-              
+
+
     DialVideoCallDTO:
       description: >-
         The structure to start a video call via the user’s dialler app.
@@ -485,9 +1647,9 @@ components:
               description: >-
                 The phoneNumber.
               example: “+1650253000”
-              
-              
-    
+
+
+
     DeviceActionDTO:
       description: >-
         The DeviceAction structure
@@ -498,8 +1660,8 @@ components:
               description: >-
                 request for a one-time share of device specifics (device model, operating system version, messaging client identifier and version, and remaining battery charge in minutes)
               $ref: '#/components/schemas/RequestDeviceSpecificsDTO'
-    
-    
+
+
     ComposeActionDTO:
       description:  >-
         The ComposeAction DTO
@@ -514,8 +1676,8 @@ components:
               description:  >-
                 Compose a draft text message.
               $ref: '#/components/schemas/ComposeTextMessageDTO'
-              
-              
+
+
     ComposeRecordingMessageDTO:
       description: >-
         The ComposeRecordingMessage structure
@@ -532,8 +1694,8 @@ components:
               description: >-
                 The compose type.
               example: “AUDIO”
-              
-              
+
+
     ComposeTextMessageDTO:
       description: >-
         The ComposeTextMessage structure
@@ -552,8 +1714,8 @@ components:
               minLength: 1
               maxLength: 100
               example: “text to send”
-              
-      
+
+
     CalenderActionDTO:
       description: >-
         The CalendarAction DTO
@@ -563,7 +1725,7 @@ components:
             createCalendarEvent:
               allOf:
                 - $ref: '#/components/schemas/CreateCalendarEventDTO'
-                
+
     CreateCalendarEventDTO:
       description: >-
         Creates a new event on the user’s calendar
@@ -599,8 +1761,8 @@ components:
               minLength:  1
               maxLength:  100
               example:  “Meeting”
-              
-      
+
+
 
     PaginatedResultChatBotExtendedListDTO:
       description: >-

@@ -1303,7 +1303,7 @@ components:
                 The client Version.
               minLength: 1
               maxLength: 15
-              examples: “RCSAndrd-1.0”
+              example: RCSAndrd-1.0
             deviceModel:
               type: string
 

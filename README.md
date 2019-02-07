@@ -7,8 +7,8 @@
 - Swagger 3.0 OPEN APIで作成
 - Git管理はGitHub
 
-環境構築
------------
+## 環境構築
+
 ### Docker for mac のインストール
 https://store.docker.com/editions/community/docker-ce-desktop-mac
 
@@ -25,4 +25,12 @@ https://store.docker.com/editions/community/docker-ce-desktop-mac
 ```
 $ docker-compose up
 ```
-### http://localhost:8001 を叩く。
+ - http://localhost:8001 を叩く。
+
+## 参考一覧
+### Swaggerの記法まとめ
+https://qiita.com/rllllho/items/53a0023b32f4c0f8eabb#paths
+### サンプルSwagger
+https://app.swaggerhub.com/apis/GSMA/GSMA-MaaP-API/1.0.0-oas3#/
+### 公式サイト
+https://swagger.io/specification/#dataTypeFormat

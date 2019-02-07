@@ -188,16 +188,41 @@ paths:
     post:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
       summary: >-
         Update campaign.
       description: >-
         Update a campaign. If the campaign scheduleInitDate field is not filled in, then the current date and time will be automatically assigned to it by the server.This API method is only available to Draft campaigns.
+        parameters:
+        - in: path
+          name: campaignId
+          schema:
+          type: integer (int64)
+          description: >-
+            Campaign identifier
+          required:
+                - campaignId
+          required: true
+          parameters:
+        - in: formdata
+          name: The campaign
+          schema:
+          type:   BaseCampaignDTO
+          $ref: '#/components/schemas/BaseCampaignDTO'
+          description: >-
+            Campaign identifier
+          required:
+                - campaign
+          required: true
+          parameters:
+        - in: formdata
+          name: csv 
+          schema:
+          type: file
+          description: >-
+            The csv file (one phone number per line)
+          required:
+                - csv
+          required: true
       responses:
         '200':
           description: >-
@@ -218,16 +243,31 @@ paths:
     get:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
       summary: >-
         Get campaign.
       description: >-
         Returns the campaign identified by the campaignId.
+         - in: header
+          name: Accept-Language
+          schema:
+          type: string
+          description: >-
+            The language that results should be returned. Any languages defined on ISO 639-1. 
+          example: en
+          length: 0-5
+          required:
+                - Accept-Language
+          required: optional
+        - in: path
+          name: campaignId
+          schema:
+          type:   integer (int64)
+          description: >-
+            The id of the campaign to fetch.
+          required:
+                - campaignId
+          required: true
+           parameters:
       responses:
         '200':
           description: >-
@@ -250,17 +290,19 @@ paths:
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
     # Delete draft campaign.
+     /a2p/campaigns/{campaignId}:
     delete:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
       summary: >-
         Delete draft campaign.
+        parameters:
+        - in: path
+          name: campaign identifier
+          schema:
+            type: integer (int64)
+            description: >-Campaign identifier
+          required: true
       responses:
         '200':
           description: >-
@@ -286,16 +328,19 @@ paths:
     get:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
+      
       summary: >-
         Get campaign’s contacts.
       description: >-
         Returns the list of contacts and message status of the campaign. It writes to a stream a csv file with one contact imsuri and message status per line separated by a semicolon.
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: integer (int64)
+            description: >-
+            The campaign id.
+          required: true
       responses:
         '200':
           description: >-
@@ -321,16 +366,18 @@ paths:
     get:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
       summary: >-
         Get campaign’s statistics.
       description: >-
         Returns the campaign’s statistics.
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+          type: integer (int64)
+          description: >-
+          The campaign id.
+          required: true
       responses:
         '200':
           description: >-
@@ -357,17 +404,18 @@ paths:
     get:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
       summary: >-
         Get campaign status.
       description: >-
         Returns the campaign identified by the campaignId.
         The id of the campaign to fetch the status.
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+          type: integer (int64)
+          description: >-
+          required: true
       responses:
         '200':
           description: >-
@@ -393,16 +441,35 @@ paths:
     put:
       tags:
         - A2P Campaigns API
-      parameters:
-        - in: path
-          name: campaignId
-          schema:
-            type: string
-          required: true
+    
       summary: >-
         Sets the campaign status.
       description: >-
         Modifies the campaign status to the received campaignStatus parameter, if possible. Returns the campaign’s resulting status.
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: integer (int64)
+            description: >-
+            The campaign id.
+          required: true
+        - in: query
+          name: campaignStatus
+          schema:
+            type: enum (IN_PROGRESS, CANCELLED, PAUSED)
+            description: >-
+            The campaign status to set
+          example: CANCELLED
+          required: true
+        - in: query
+          name: revocation
+          schema:
+            type: boolean
+            description: >-
+              Revoke the sent messages
+          example: false
+          required: optional
       responses:
         '200':
           description: >-
@@ -433,6 +500,30 @@ paths:
         Upload a new file.
       description: >-
         Upload a new file. There are no restrictions for the number of saved files.
+      parameters:
+        - in: query
+          name: fileUrl
+          schema:
+          type: istring
+          description: >-
+          The file Url
+          example: http://wit.software.com/rcsbotsgateway/uploads/5bee82fa
+      #required: optional
+        - in: query
+          name: until
+          schema:
+          type: string (date-time)
+          description: >-
+          The until. This specifies how long the user wants to keep the file. 
+          Example: 2018-07-31T21:08:15.933Z
+        #required: optional
+        - in: FormData
+          name: fileContent
+          schema:
+            type: file 
+            description: >-
+              The media file (the binary data of the actual file)
+              #required: optional
       responses:
         '200':
           description: >-
@@ -450,11 +541,20 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-      # Send Message
+      # FACEBOOK Send Message
   /bots/send:
     post:
       tags:
         - Facebook Send API V1.4
+        parameters:
+        - in: body
+          name: message
+          schema:
+            type: FacebookIncomingMessageRequest
+            $ref: '#/components/schemas/  FacebookIncomingMessageRequest'
+            description: >-
+            message
+          required: true
       summary: >-
         Send Message
       description: >-
@@ -502,12 +602,67 @@ paths:
   #         description: >-
   #           Internal Server Error prevents the server from processing the request.
   #           # $ref: '#/components/schemas/ApiErrorInfo'
+  
+  # FACEBOOK Send Message with file
+  /bots/send:
+    post:
+      tags:
+        - Facebook Send API V1.4
+        parameters:
+        - in: formdata
+          name: message
+          schema:
+            type: FacebookIncomingMessage
+            $ref: '#/components/schemas/FacebookIncomingMessage'
+            description: >-
+            message
+          required: true         
+          parameters:
+        - in: formdata
+          name: recipient
+          schema:
+            type: FacebookIncomingMessageRecipient
+            $ref: '#/components/schemas/FacebookIncomingMessageRecipient'
+            description: >-
+            recipient
+          required: true
+      summary: >-
+        Send Message with file
+      description: >-
+        Send a message with a file to given user.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/    FacebookIncomingMessageResponse'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
 
+ #facebook 2.3
   # Attachment Upload from URL
   /facebook/bot/v2.3/message_attachments:
     post:
       tags:
-        - Facebook Send API V2.3
+        - Facebook Send API V2.3        
+        parameters:
+        - in: body
+          name: message
+          schema:
+            type: FacebookUploadRequest
+            $ref: '#/components/schemas/FacebookUploadRequest'
+            description: >-
+            message
+          required: true        
       summary: >-
         Attachment Upload from URL
       description: >-
@@ -529,31 +684,49 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-      # Attachment Upload
-      # /facebook/bot/v2.3/message_attachments:
-      #   post:
-      #     tags:
-      #       - Facebook Send API V2.3
-      #     summary: >-
-      #       Attachment Upload
-      #     description: >-
-      #       Upload assets that can be sent in messages at a later time.
-      #     responses:
-      #       '200':
-      #         description: >-
-      #           Success
-      #         # $ref: '#/components/schemas/  FacebookMessageResponse'
-      #       '400':
-      #         description: >-
-      #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      
+       #Attachment Upload
+  /facebook/bot/v2.3/message_attachments:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+      Attachment Upload
+      parameters:
+        - in: formdata
+          name: message
+          schema:
+            type:   FacebookUploadRequest
+            $ref: '#/components/schemas/FacebookUploadRequest'
+            description: >-
+            Message object
+          required: true         
+          parameters:
+        - in: formdata
+          name: required
+          schema:
+            type: file
+            description: >-
+            filedata
+            required: true
+      description: >-
+       Upload assets that can be sent in messages at a later time.
+      responses:
+      '200':
+        description: >-
+         Success
+      # $ref: '#/components/schemas/  FacebookMessageResponse'
+      '400':
+        description: >-
+         Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
       #           # $ref: '#/components/schemas/ApiErrorInfo'
-      #       '401':
-      #         description: >-
-      #           Unauthorized The request requires user authentication.
+      '401':
+        description: >-
+         Unauthorized The request requires user authentication.
       #           # $ref: '#/components/schemas/ApiErrorInfo'
-      #       '500':
-      #         description: >-
-      #           Internal Server Error prevents the server from processing the request.
+      '500':
+        description: >-
+          Internal Server Error prevents the server from processing the request.
       #           # $ref: '#/components/schemas/ApiErrorInfo'
 
       # Send Message
@@ -561,10 +734,20 @@ paths:
     post:
       tags:
         - Facebook Send API V2.3
+        
       summary: >-
         Send Message
       description: >-
         Send a message to given user.
+     parameters:
+        - in: body
+          name: message
+          schema:
+            type:   FacebookMessageRequest
+            $ref: '#/components/schemas/FacebookMessageRequest'
+            description: >-
+            Message 
+          required: true 
       responses:
         '200':
           description: >-
@@ -583,48 +766,85 @@ paths:
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
       # Send Message with file
-  # /facebook/bot/v2.3/messages/:
-  #   post:
-  #     tags:
-  #       - Facebook Send API V2.3
-  #     summary: >-
-  #       Send Message with file
-  #     description: >-
-  #       Send a message with a file to given user.
-  #     responses:
-  #       '200':
-  #         description: >-
-  #           Success
-  #         # $ref: '#/components/schemas/  FacebookMessageResponse'
-  #       '400':
-  #         description: >-
-  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
-  #       '401':
-  #         description: >-
-  #           Unauthorized The request requires user authentication.
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
-  #       '500':
-  #         description: >-
-  #           Internal Server Error prevents the server from processing the request.
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
+  /facebook/bot/v2.3/messages/:
+   post:
+     tags:
+       - Facebook Send API V2.3
+     summary: >-
+       Send Message with file
+     description: >-
+       Send a message with a file to given user.
+     parameters:
+        - in: body
+          name: message
+          schema:
+            type:   FacebookMessageRequest
+            $ref: '#/components/schemas/FacebookMessageRequest'
+            description: >-
+            Message 
+          required: true 
+      responses:
+        '200':
+        description: >-
+          Success
+          $ref: '#/components/schemas/  FacebookMessageResponse'
+         '400':
+          description: >- 
+          Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+          $ref: '#/components/schemas/ApiErrorInfo'
+          '401':
+          description: >-
+          Unauthorized The request requires user authentication.
+          $ref: '#/components/schemas/ApiErrorInfo'
+          '500':
+          description: >-
+          Internal Server Error prevents the server from processing the request.
+           $ref: '#/components/schemas/ApiErrorInfo'
 
-
+  #RCS Bot API
   # Operations about capability
   /rcs/bot/v1/{botId}/contactCapabilities:
     get:
       tags:
         - RCS Bot API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
+      
       summary: >-
         Operations about capability
       description: >-
         This is the API to get the RCS capability of the given user’s device.
+      parameters:
+        - in: path
+          name: botId
+          schema:
+          type: string
+          description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
+          required: true
+      parameters:
+        - in: Query
+          name: chatId
+          schema:
+          type: string
+          description: >-
+            The chatId. Required if userContact is not set. 
+            Example: 93JF93SEIJFE 
+            Length: 0 - 255
+          required: true
+      parameters:
+        - in: Query
+          name: userContact
+          schema:
+          type: string
+          description: >-
+            The userContact. Required if chatId is not set. 
+            Example: +14251234567 
+            Length: 0 - 255
+            Example: string 
+            Length: 1 - 49
+          required: true
+          
       responses:
         '200':
           description: >-
@@ -651,16 +871,58 @@ paths:
     post:
       tags:
         - RCS Bot API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
+      
       summary: >-
         Operations about files - Upload
       description: >-
         This is the API to upload a file to the CDN.
+        
+      parameters:
+        - in: path
+          name: botId
+          schema:
+          type: string
+          description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
+          required: true
+      parameters:
+        - in: Query
+          name: fileType
+          schema:
+          type: string
+          description: >-
+            The fileType. 
+            Example: audio/mp4
+           # required: otional
+      parameters:
+        - in: Query
+          name: fileUrl
+          schema:
+          type: string
+          description: >-
+            The file Url. 
+            Example: http://www.example.com/files/example-audio.mp4 
+            #required: optional
+      parameters:
+        - in: Query
+          name: until
+          schema:
+          type: string (date-time0)
+          description: >-
+            The until.
+            Example: 2019-10-03T21:08:15.933Z
+            #required: optional
+      parameters:
+        - in: FormData
+          name: fileContent
+          schema:
+          type: file
+          description: >-
+            The media file
+            #required: optional
+            
       responses:
         '202':
           description: >-
@@ -683,21 +945,27 @@ paths:
     get:
       tags:
         - RCS Bot API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: fileId
-          schema:
-            type: string
-          required: true
       summary: >-
         Operations about files - Retrieve Info
       description: >-
         This is the API to retrieve a file’s information.
+        parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+            description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: integer (int64)
+            description: >-
+            fileId
+          required: true
       responses:
         '200':
           description: >-
@@ -723,21 +991,28 @@ paths:
     delete:
       tags:
         - RCS Bot API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: fileId
-          schema:
-            type: string
-          required: true
       summary: >-
         Operations about files - Delete
       description: >-
         This is the API to delete the file which was previously uploaded to the CDN.
+        
+     parameters:
+        - in: path
+          name: botId
+          schema:
+            type: string
+            description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: integer (int64)
+            description: >-
+            fileId
+          required: true
       responses:
         '204':
           description: >-
@@ -763,20 +1038,33 @@ paths:
     post:
       tags:
         - RCS Bot API
+
+      summary: >-
+        Send message
+      description: >-
+        This is the API used to send messages and isTyping indications to users.
       parameters:
         - in: path
           name: botId
           schema:
             type: string
+            description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
           required: true
-      summary: >-
-        Send message
-      description: >-
-        This is the API used to send messages and isTyping indications to users.
+         - in: Body
+          name: message
+          schema:
+            type: RCSMessageWithContactInfoDTO
+            $ref: '#/components/schemas/RCSMessageWithContactInfoDTO'
+            description: >-
+            message
+          required: true  
       responses:
         '202':
           description: >-
-            TheThe request of sending message or isTyping indication is accepted by the Chatbot Platform and ready to send to the user.
+            The request of sending message or isTyping indication is accepted by the Chatbot Platform and ready to send to the user.
           # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
         '400':
           description: >-
@@ -799,21 +1087,29 @@ paths:
     get:
       tags:
         - RCS Bot API
+      summary: >-
+        Query a given message status
+      description: >-
+        This is the API to query the given message status. Although the message status can be updated via webhook, this API provides an alternative optional way to check the message status. Possible message status includes ‘pending’, ‘sent’, ‘delivered’, ‘displayed’, ‘cancelled’, ‘revoked’, and ‘failed’.
       parameters:
         - in: path
           name: botId
           schema:
             type: string
+            description: >-
+            The nickname, with the exclusion of the at(@).
+            Example: botnews
+            Length: 1 - 49
           required: true
         - in: path
           name: msgId
           schema:
             type: string
-          required: true
-      summary: >-
-        Query a given message status
-      description: >-
-        This is the API to query the given message status. Although the message status can be updated via webhook, this API provides an alternative optional way to check the message status. Possible message status includes ‘pending’, ‘sent’, ‘delivered’, ‘displayed’, ‘cancelled’, ‘revoked’, and ‘failed’.
+            description: >-
+            The messsage Id. 
+            Example: 242432 
+            Length: 1 - 100
+          #required: otional
       responses:
         '200':
           description: >-
@@ -839,23 +1135,38 @@ paths:
     put:
       tags:
         - RCS Bot API
+      summary: >-
+        Operations about message status
+      description: >-
+        This is the API to send read notification to users for a received message or revoke a sent message.
       parameters:
         - in: path
           name: botId
           schema:
             type: string
+            description: >-
+            The nickname, with the exclusion of the at(@). 
+            Example: botnews 
+            Length: 1 - 49
           required: true
         - in: path
           name: msgId
           schema:
             type: string
+            description: >-
+            The messsage Id. 
+            Example: 12121 
+            Length: 1 - 100
           required: true
-      summary: >-
-        Operations about message status
-      description: >-
-        This is the API to send read notification to users for a received message or revoke a sent message.
+        - in: body
+          name: msgId
+          schema:
+            type: RcsStatusUpdateDTO
+            $ref: '#/components/schemas/RcsStatusUpdateDTO'
+            description: >-
+          required: true
       responses:
-        '200':
+        '204':
           description: >-
             The status of the message has been updated by the Chatbot Platform. For ‘displayed’, a display notification will be sent to the user; for ‘cancelled’, the Chatbot Platform shall try to revoke the message if it has not been delivered to the user. NOTE, how to revoke a message is still under GSMA discussion so the Chatbot Platform may or may not support this operation.
         '400':
@@ -880,22 +1191,36 @@ paths:
     get:
       tags:
         - RCS Chatbot Directory API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: msgId
-          schema:
-            type: string
-          required: true
       summary: >-
         Chatbot Information Retrievals
       description: >-
         This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of a chatbot.
-
+      parameters:
+        - in: query
+          name: hl
+          schema:
+            type: string
+            description: >-
+            Locale defined as ISO 639-1. Used to control the language of the provided query results. 
+            Example: en
+          required: true
+        - in: query
+          name: ho
+          schema:
+            type: string
+            description: >-
+            Home operator of the device and this shall be represented as <MCCMNC> combination. Whereby MCC and MNC shall be replaced by the respective values of the home network in decimal format and with a 2-digit MNC padded out to 3 digits by inserting a 0 at the beginning. 
+            Example: 370270
+          required: true    
+          - in: query
+          name: id
+          schema:
+            type: string
+            description: >-
+            Chatbot service Identifier SIP URI. It shall not contain URL parameters and shall be encoded respecting the definitions of RFC3986. 
+            Example: sip:bot@domain.com
+          required: true
+          
       responses:
         '200':
           description: >-
@@ -924,21 +1249,36 @@ paths:
     get:
       tags:
         - RCS Chatbot Directory API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: msgId
-          schema:
-            type: string
-          required: true
+
       summary: >-
         Chatbot Information Retrievals by nickname
       description: >-
         This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of a chatbot.
+      parameters:
+        - in: query
+          name: hl
+          schema:
+            type: string
+            description: >-
+            Locale defined as ISO 639-1. Used to control the language of the provided query results. 
+            Example: en
+          #required: optional
+          - in: query
+          name: ho
+          schema:
+            type: string
+            description: >-
+            Home operator of the device and this shall be represented as <MCCMNC> combination. Whereby MCC and MNC shall be replaced by the respective values of the home network in decimal format and with a 2-digit MNC padded out to 3 digits by inserting a 0 at the beginning. 
+            Example: 370270
+          required: true
+           - in: query
+          name: nickname
+          schema:
+            type: string
+            description: >-
+            Nickname. 
+            Example: @newsbot
+          required: true       
 
       responses:
         '200':
@@ -964,22 +1304,35 @@ paths:
     get:
       tags:
         - RCS Chatbot Directory API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: msgId
-          schema:
-            type: string
-          required: true
       summary: >-
         Get the categories.
       description: >-
         Get the categories by the order specified in the database.
-
+     parameters:
+        - in: query
+          name: client_vendor
+          schema:
+            type: string
+            description: >-
+            Contains the query client_vendor HTTP GET parameter included in the configuration requests. 
+            Example: VNDR
+          #required: optional
+          - in: query
+          name: client_version
+          schema:
+            type: string
+            description: >-
+            Contains the query client_version HTTP GET parameter included in the configuration requests. 
+            Example: RCSAndrd-1.0
+          #required: optional
+           - in: query
+          name: nickname
+          schema:
+            type: string
+            description: >-
+            Nickname. 
+            Example: @newsbot
+          required: true       
       responses:
         '200':
           description: >-
@@ -1009,11 +1362,13 @@ paths:
           name: botId
           schema:
             type: string
+            description: >-
           required: true
         - in: path
           name: msgId
           schema:
             type: string
+            description: >-
           required: true
       summary: >-Chatbot Directory to retrieve the list of available Chatbots
       description: >-

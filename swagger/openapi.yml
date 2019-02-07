@@ -857,8 +857,150 @@ paths:
             Server Error
             # $ref: '#/components/schemas/    RCSMessageWithContactInfoResponseDTO'
   # 続きここから!!!
-  # RCS Chatbot Directory API:
+  # Chatbot Information Retrievals
+  /rcs/bot:
+    get:
+      tags:
+        - RCS Chatbot Directory API
+      summary: >-
+        Chatbot Information Retrievals
+      description: >-
+        This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of a chatbot.
+      responses:
+        '200':
+          description: >-
+            Success
+            # $ref: '#/components/schemas/  ChatBotDTO'
+        '304':
+          description: >-
+            Not Modified.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/  ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/  ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
 
+    # # RCS Chatbot Directory API: Infor Retrievals by nickname
+    # get:
+    #   tags:
+    #     - RCS Chatbot Directory API
+    #   summary: >-
+    #     Chatbot Information Retrievals by nickname
+    #   description: >-
+    #     This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of a chatbot.
+    #   responses:
+    #     '200':
+    #       description: >-
+    #         Success
+    #       # $ref: '#/components/schemas/ChatBotDTO'
+    #     '400':
+    #       description: >-
+    #         Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+    #         # $ref: '#/components/schemas/ApiErrorInfo'
+    #     '401':
+    #       description: >-
+    #         Unauthorized The request requires user authentication.
+    #         # $ref: '#/components/schemas/  ApiErrorInfo'
+    #     '500':
+    #       description: >-
+    #       Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+    #         # $ref: '#/components/schemas/  ApiErrorInfo'
+
+    # Get the categories
+  /rcs/categories:
+    get:
+      tags:
+        - RCS Chatbot Directory API
+      summary: >-
+        Get the categories.
+      description: >-
+        Get the categories by the order specified in the database.
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+
+    # Get the categories
+  /rcs/chatbots:
+    get:
+      tags:
+        - RCS Chatbot Directory API
+      summary: >-
+        Chatbot Directory to retrieve the list of available Chatbots
+      description: >-
+        This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of each chatbot.
+      responses:
+        '200':
+          description: >-
+            Success. If the client is authenticated it returns a PaginatedResult<ChatBotExtendedListDTO>. If the client is not authenticated it returns a PaginatedResult<ChatBotList>.
+          # $ref: '#/components/schemas/PaginatedResult«ChatBotExtendedListDTO'
+          # $ref: '#/components/schemas/  PaginatedResult«ChatBotList'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+
+  # Get accuont overview
+  /rcs/overview:
+    get:
+      tags:
+        - RCS Chatbot Directory API
+      summary: >-
+        Get accounts overview
+      description: >-
+        Retrieve the “home page” data that will be shown on the APPs Bots & Brand Store.
+      responses:
+        '200':
+          description: >-
+            Success.
+          # $ref: '#/components/schemas/RCSMessageWithContactInfoResponseDTO'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+        '500':
+          description: >-
+            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
+             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
+
+
+
+
+
+  #ここまで
 
 components:
   schemas:
@@ -988,7 +1130,7 @@ components:
                 List of validation errors.
     Attachment:
       description: >-
-        attachment object. The following can be included in the attachment object: Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.
+        attachment object. The following can be included in the attachment object. Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.
       type: object
       allOf:
         - properties:
@@ -1000,6 +1142,7 @@ components:
               type: enum
               description: >-
                 Type of attachment, may be image, audio, video, file or template
+
     AudioMessageDTO:
       description: >-
         This resource represents the AudioMessageDTO
@@ -1070,7 +1213,388 @@ components:
               description: >-
                 The campaign paused action.
               example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            priority:
+              type: enum
+              description: >-
+                The campaign priority.
+              example: “HIGH”
+            rcsMessage:
+              description: >-
+                The campaign content DTO.
+              $ref: '#/components/schemas/CampaignRCSMessageDTO'
 
+
+
+    CampaignRCSMessageDTO:
+      description: >-
+        The CampaignRCSMessage structure.
+      type: object
+      allOf:
+        - properties:
+            audioMessage:
+              description: >-
+                The RCS audio message.
+              $ref: '#/components/schemas/AudioMessageDTO'
+            expiry:
+              type: string
+              description: >-
+                The is the expiry of the message. The Chatbot Platform will try to revoke this message after this expiry.
+              example: “2019-09-26T01:46:04.868Z”
+            fileMessage:
+              description: >-
+                The RCS file transfer.
+              $ref: '#/components/schemas/FileMessageDTO'
+            geolocationPushMessage:
+              description: >-
+                The RCS geolocation push.
+              $ref: '#/components/schemas/GeolocationPushMessageDTO'
+            isTyping:
+              type: enum
+              description: >-
+                The isTyping notification to be sent to the user for the given Chat, or the isTyping notification received from the user for the given Chat.
+              example: “ACTIVE”
+            msgId:
+              type: string
+              description: >-
+            richcardMessage:
+              description: >-
+                The the Rich Card JSON object.
+              $ref: '#/components/schemas/RichcardMessageDTO'
+            sharedData:
+              description: >-
+                The Shared Data. This can only be sent from the user to the Chatbot.
+              $ref: '#/components/schemas/SharedDataDTO'
+
+
+
+    SharedDataDTO:
+      description: >-
+        The SharedData structure
+      type: object
+      allOf:
+        - properties:
+            deviceSpecifics:
+              description: >-
+                Request specifics about the user’s device.
+              $ref: '#/components/schemas/DeviceSpecificsDTO'
+
+
+    DeviceSpecificsDTO:
+      description: >-
+        The DeviceSpecifics structure
+      type: object
+      allOf:
+        - properties:
+            batteryRemainingMinutes:
+              type: integer
+              description: >-
+                The battery Remaining Minutes.
+              example: 517
+            clientVendor:
+              type: string
+              description: >-
+                The client Vendor.
+              minLength: 1
+              maxLength: 4
+              example: “VNDR”
+            clientVersion:
+              type: string
+              description: >-
+                The client Version.
+              minLength: 1
+              maxLength: 15
+              examples: “RCSAndrd-1.0”
+            deviceModel:
+              type: string
+
+
+
+
+    RichcardMessageDTO:
+      description: >-
+        The structure for the richcard.
+      type: object
+      allOf:
+        - properties:
+            message:
+              description: >-
+                The message structure.
+              $ref: '#/components/schemas/MessageDTO'
+
+
+    MessageDTO:
+      description: >-
+        The structure that contains a generalPurposeCard or a generalPurposeCardCarousel.
+      type: object
+      allOf:
+        - properties:
+            generalPurposeCard:
+              description: >-
+                The generalPurposeCard structure.
+              $ref: '#/components/schemas/GeneralPurposeCardDTO'
+            generalPurposeCardCarousel:
+              description: >-
+                The generalPurposeCardCarousel structure.
+              $ref: '#/components/schemas/GeneralPurposeCardCarouselDTO'
+
+
+    GeneralPurposeCardCarouselDTO:
+      description: >-
+        The RCS General Purpose Card Carousel structure.
+      type: object
+      allOf:
+        - properties:
+            content:
+              type: array
+              description: >-
+                The content structure.
+              $ref: '#/components/schemas/ContentDTO'
+            layout:
+              description: >-
+                The Layout structure.
+              $ref: '#/components/schemas/LayoutDTO'
+
+    LayoutDTO:
+      description: >-
+        The layout of the rich card.
+      type: object
+      allOf:
+        - properties:
+            cardOrientation:
+              type: enum
+              description: >-
+                The card orientation.
+              example: “HORIZONTAL”
+            cardWidth:
+              type: enum
+              description: >-
+                The card width.
+              example: “SMALL_WIDTH”
+            imageAlignment:
+              type: enum
+              description: >-
+                The image alignment.
+              example: “LEFT”
+
+
+    GeneralPurposeCardDTO:
+      description: >-
+        The RCS General Purpose Card structure.
+      type: object
+      allOf:
+        - properties:
+            content:
+              description: >-
+                The content structure.
+              $ref: '#/components/schemas/ContentDTO'
+            layout:
+              description: >-
+                The Layout structure.
+              $ref: '#/components/schemas/LayoutDTO'
+
+    ContentDTO:
+      description: >-
+        The rich card Content structure
+      type: object
+      allOf:
+        - properties:
+            description:
+              type: string
+              description: >-
+                The content description.
+              minLength: 1
+              maxLength: 2000
+              example: “This is the description of the rich card.”
+            media:
+              description: >-
+                The media DTO.
+              $ref: '#/components/schemas/MediaDTO'
+            suggestions:
+              type: array
+              description: >-
+                The suggestions List.
+              $ref: '#/components/schemas/SuggestionDTO'
+            title:
+              type: string
+              description: >-
+                The content title.
+              minLength: 1
+              maxLength: 200
+              example: “This is a rich card.”
+
+
+    SuggestionDTO:
+      description: >-
+        The Suggestion structure. Used for store the reply or action that will be sent to the user.
+      type: object
+      allOf:
+        - properties:
+            action:
+              description: >-
+                The action structure.
+              $ref: '#/components/schemas/ActionDTO'
+            reply:
+              description: >-
+                The reply structure.
+              $ref: '#/components/schemas/ReplyDTO'
+
+    ReplyDTO:
+      description: >-
+        The structure for the reply object.
+      type: object
+      allOf:
+        - properties:
+            displayText:
+              type: string
+              description: >-
+                The displayText.
+              minLength: 1
+              maxLength: 25
+              example: “Yes”
+            postback:
+              description: >-
+                The postback structure.
+              $ref: '#/components/schemas/PostbackDTO'
+
+
+
+    MediaDTO:
+      description: >-
+        The rich card media structure.
+      type: object
+      allOf:
+        - properties:
+            contentDescription:
+              type: string
+              description: >-
+                The contentDescription.
+              example: “Textual description of media content, e. g. for use with screen readers.”
+            height:
+              type: enum
+              description: >-
+                The height.
+              example: “MEDIUM_HEIGHT”
+            mediaContentType:
+              type: string
+              description: >-
+                The mediaContentType.
+              example: “video/mp4”
+            mediaFileSize:
+              type: integer
+              description: >-
+                The mediaFileSize.
+              example: 2343243
+            mediaUrl:
+              type: string
+              description: >-
+                The mediaUrl.
+              example: “https://cdn.server/path/media.mp4“
+            thumbnailContentType:
+              type: string
+              description: >-
+                The thumbnailContentType.
+              example: “image/png”
+            thumbnailFileSize:
+              type: integer
+              description: >-
+                The thumbnailFileSize.
+              example: 1213
+            thumbnailUrl:
+              type: string
+              description: >-
+                The thumbnailUrl.
+              example: “https://cdn.server/path/media.png“
+
+
+
+    GeolocationPushMessageDTO:
+      description: >-
+        The geolocation push to be sent via RCS.
+      type: object
+      allOf:
+        - properties:
+            expiry:
+              type: string
+              description: >-
+                This is an absolute date at which time the recipient is no longer permitted to possess the location information.
+              example: “2017-09-26T01:46:04.868Z”
+            label:
+              type: string
+              description: >-
+                This can be used to tag the nature of the location.
+              minLength: 0
+              maxLength: 200
+              example: “meeting location”
+            pos:
+              type: string
+              description: >-
+                This is the coordinates (latitude, longitude)
+              example: “26.1181289 -80.1283921”
+            radius:
+              type: number
+              description: >-
+                The radius of the circle will be represented in meters.
+              example: 10.0
+            timeOffset:
+              type: integer
+              description: >-
+                This is the time zone where the location information was pushed, expressed as the number of minutes away from UTC.
+              example: -300
+            timestamp:
+              type: string
+              description: >-
+                This is the time when the location information was pushed.
+              example: “2017-09-26T01:46:04.868Z”
+
+
+
+
+    FileMessageDTO:
+      description: >-
+        The RCS file transfer.
+      type: object
+      allOf:
+        - properties:
+            fileMIMEType:
+              type: string
+              description: >-
+                The MIME type of the file.
+              example: “image/jpeg”
+            fileName:
+              type: string
+              description: >-
+                The file name.
+              example: “file.jpg”
+            fileSize:
+              type: integer
+              description: >-
+                The size of the file.
+              example: 1234567
+            fileUrl:
+              type: string
+              description: >-
+                The URL of the file.
+              example: “http://www.example.com/files/file.jpg“
+            thumbnailFileName:
+              type: string
+              description: >-
+                The file name of the thumbnail.
+              example: “test.jpg”
+            thumbnailFileSize:
+              type: integer
+              description: >-
+                The size of the thumbnail.
+              example: 1234
+            thumbnailMIMEType:
+              type: string
+              description: >-
+                The MIME type of the thumbnail.
+              example: “image/jpeg”
+            thumbnailUrl:
+              type: string
+              description: >-
+                The URL of the thumbnail.
+              example: “http://www.example.com/files/test.jpg“
 
 
 

@@ -962,11 +962,11 @@ components:
         attachment object. The following can be included in the attachment object: Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.
       type: object
       allOf:
-        - properties:
+          - properties:
             payload:
-              type: Payload
               description: >-
                 Payload of attachment
+              $ref: '#/components/schemas/Payload'
             type:
               type: enum
               description: >-
@@ -1010,7 +1010,7 @@ components:
         This resource represents the base campaign.
       type: object
       allOf:
-        - properties:
+          - properties:
             campaignFailureReason:
               type: string
               description: >-
@@ -1051,6 +1051,35 @@ components:
               description: >-
                 The campaign content DTO.
               $ref: '#/components/schemas/CampaignRCSMessageDTO'
+            rescheduleInitDate:
+              type: string
+              description: >-
+                The campaign rescheduled date.
+            revocationTime:
+              type: integer
+              description: >-
+                The campaign revocation time.
+              example: 60
+            revokeCancelledCampaign:
+              type: boolean
+              description: >-
+                The campaign cancelled revoke option.
+              example: true
+            scheduleEndDate:
+              type: string
+              description: >-
+                Date which the campaign should end. If not set, the campaign will finish when there are no more messages to send.
+            scheduleInitDate:
+              type: string
+              description: >-
+                Date which the campaign should begin. If not defined, will be assumed the actual date plus 15 seconds
+            title:
+              type: string
+              description: >-
+                The campaign title.
+              minLength: 0
+              maxLength: 255
+              example: “Test campaign”
 
 
     CampaignDTO:
@@ -1058,7 +1087,7 @@ components:
         This resource represents the campaign.
       type: object
       allOf:
-        - properties:
+          - properties:
             account:
               description: >-
                 The account simple DTO.
@@ -1140,7 +1169,7 @@ components:
         The CampaignRCSMessage structure.
       type: object
       allOf:
-        - properties:
+          - properties:
             audioMessage:
               description: >-
                 The RCS audio message.
@@ -1212,7 +1241,7 @@ components:
         The CampaignShortStatus structure
       type: object
       allOf:
-        - properties:
+          - properties:
             campaignId:
               type: integer
               description: >-
@@ -1354,12 +1383,843 @@ components:
                 Total of messages.
               example: 1000
               
+              
+    CampaignWithStatistics:
+      description: >-
+        This resource represents a campaign view with statistics.
+      type: object
+      allOf:
+          - properties:
+            account:
+              description: >-
+              $ref: '#/components/schemas/AccountSimpleDTO'
+            campaignFailureReason:
+              type: string
+              description: >-
+                The campaign failure Reason.
+              minLength: 0
+              maxLength: 255
+              example: “Invalid contacts”
+            campaignId:
+              type: integer
+              description: >-
+                The campaign id.
+              example: 1
+            campaignStatus:
+              type: enum
+              description: >-
+                The current status of the campaign. If you are saving a draft, you must send the value ‘DRAFT’ otherwise it should have no value when creating campaign
+            campaignStatusDate:
+              type: string
+              description: >-
+            campaignType:
+              type: enum
+              description: >-
+                The campaign type.
+              example: “BULK_DELIVERY”
+            contactCSVName:
+              type: string
+              description: >-
+            contactCSVUrl:
+              type: string
+              description: >-
+            fallbackOption:
+              type: enum
+              description: >-
+                The campaign fallbackOption.
+              example: “NON_RCS_ONLY”
+            pausedReason:
+              type: enum
+              description: >-
+                The campaign paused action.
+              example: “MAX_ACCOUNT_MESSAGES_REACHED_BY_DAY”
+            priority:
+              type: enum
+              description: >-
+                The campaign priority.
+              example: “HIGH”
+            rcsMessage:
+              description: >-
+                The campaign content DTO.
+              $ref: '#/components/schemas/CampaignRCSMessageDTO'
+            rescheduleInitDate:
+              type: string
+              description: >-
+                The campaign rescheduled date.
+            revocationTime:
+              type: integer
+              description: >-
+                The campaign revocation time.
+              example: 60
+            revokeCancelledCampaign:
+              type: boolean
+              description: >-
+                The campaign cancelled revoke option.
+              example: true
+            scheduleEndDate:
+              type: string
+              description: >-
+                Date which the campaign should end. If not set, the campaign will finish when there are no more messages to send.
+            scheduleInitDate:
+              type: string
+              description: >-
+                Date which the campaign should begin. If not defined, will be assumed the actual date plus 15 seconds
+            scheduleInitDateNow:
+              type: boolean
+              description: >-
+            statistics:
+              description: >-
+              $ref: '#/components/schemas/CampaignStatistics'
+            title:
+              type: string
+              description: >-
+                The campaign title.
+              minLength: 0
+              maxLength: 255
+              example: “Test campaign”
+
+    CapabilitiesResponseDTO:
+      description: >-
+        The capabilities response structure.
+      type: object
+      allOf:
+        - properties:
+            capabilities:
+              type: array
+              description: >-
+                The list of capabilities.
+            reason:
+              description: >-
+                The error reason.
+              $ref: '#/components/schemas/ReasonDTO'
+    
+    
+    CategorySimpleViewDTO:
+      description: >-
+        This resource represents a simplified version of the category resource.
+      type: object
+      allOf:
+        - properties:
+            accountsNumber:
+              type: integer
+              description: >-
+                The number of accounts of the category.
+              example: 321
+            description:
+              type: string
+              description: >-
+                The description of the category.
+              minLength: 0
+              maxLength: 100
+              example: “category”
+            icon:
+              type: string
+              description: >-
+                The icon url.
+              minLength: 0
+              maxLength: 500
+              example: “https://image.freepik.com/free-vector/welcome-lettering_23-2147511605.jpg“
+            id:
+              type: integer
+              description: >-
+                The category identifier.
+              example: 123
+            order:
+              type: integer
+              description: >-
+                The order of the category.
+              example: 2
+              
+    ChatBotDTO:
+      description: >-
+        This resource represents the ChatBotDTO
+      type: object
+      allOf:
+        - properties:
+            pcc:
+              description: >-
+                Personal Contact Card
+              $ref: '#/components/schemas/PersonalContactCard'
+      
+    ChatBotExtendedListDTO:
+      description: >-
+        This resource represents an extended version of the rcs ChatBot resource, with additional fields.
+      type: object
+      allOf:
+        - properties:
+            allowOperatorMessaging:
+              type: boolean
+              description: >-
+                The capability allowOperatorMessaging
+              example: true
+            allowSubscribers:
+              type: boolean
+              description: >-
+                The capability allowSubscribers
+              example: true
+            featureImage:
+              type: string
+              description: >-
+                The feature image
+              minLength: 0
+              maxLength: 500
+              example: “https://dummy.url.com/featureImage.jpg“
+            featured:
+              type: boolean
+              description: >-
+                The featured field
+              example: false
+            icon:
+              type: string
+              description: >-
+                The icon
+              minLength: 0
+              maxLength: 500
+              example: “https://www.wit-software.com/wp-content/themes/wit-software/img/mobile/favicon/favicon-160x160.png“
+            id:
+              type: string
+              description: >-
+                The id
+              example: “sip:+351111111@wcas.wit-software.com”
+            name:
+              type: string
+              description: >-
+                The name
+              minLength: 0
+              maxLength: 255
+              example: “News bot”
+            new:
+              type: boolean
+              description: >-
+            nickname:
+              type: string
+              description: >-
+                The nickname
+              minLength: 0
+              maxLength: 50
+              example: “@testbot”
+            shortMessage:
+              type: string
+              description: >-
+                The short message
+              minLength: 0
+              maxLength: 4000
+              example: “Just do it!”
+            subscribed:
+              type: boolean
+              description: >-
+                The subscribed field
+              example: false
+            verified:
+              type: boolean
+              description: >-
+                The verified field
+              example: true
+              
+              
+    ChatBotList:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            icon:
+              type: string
+              description: >-
+              example: “https://www.wit-software.com/wp-content/themes/wit-software/img/mobile/favicon/favicon-160x160.png“
+            id:
+              type: string
+              description: >-
+              example: “sip:+351111111@wcas.wit-software.com”
+            name:
+              type: string
+              description: >-
+              example: “News bot”
+              
+              
+    ErrorCode:
+      description: >-
+        The ErrorCode structure.
+      type: object
+      allOf:
+        - properties:
+            code:
+              type: integer
+              description: >-
+                The code number.
+            message:
+              type: string
+              description: >-
+                The error message.
+            subCode:
+              type: integer
+              description: >-
+                The sub code number.
+
+    
+    FileDTO:
+      description: >-
+        The file structure
+      type: object
+      allOf:
+          - properties:
+            fileId:
+              type: string
+              description: >-
+                The file Id.
+              example: “123”
+            fileSize:
+              type: integer
+              description: >-
+                The file size.
+              example: 12345
+            fileUrl:
+              type: string
+              description: >-
+                The fileUrl.
+              example: “https://witwcs.wit-software.com/cs/b6764742“
+            status:
+              type: enum
+              description: >-
+                The file status.
+              example: “pending”
+            validity:
+              type: string
+              description: >-
+                The validity.
+              example: “2018-10-03T21:08:15.000Z”
+              
+    FileMessage:
+      description: >-
+        Message object containing the attachment.
+      type: object
+      allOf:
+        - properties:
+            attachment:
+              description: >-
+                An object describing attachments to the message
+              $ref: '#/components/schemas/Attachment'
+              
+
+    
+    Identifier:
+      description: >-
+        The Identifier structure.
+      type: object
+      allOf:
+        - properties:
+            id:
+              type: string
+              description: >-
+                The id of a requested resource.
+              example: “123”
+              
+    InputStream:
+      description: >-
+      type: object
+      
+      
+    Media:
+      description: >-
+        The Media structure.
+      type: object
+      allOf:
+        - properties:
+            content:
+              type: string
+              description: >-
+            media-url:
+              type: string
+              description: >-
+                The media-url.
+            url:
+              type: string
+              description: >-
+                The url.
+
+    MediaEntry:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            custom-label:
+              type: string
+            label:
+              type: string
+            media:
+              $ref: '#/components/schemas/Media'
+            media-content:
+              type: string
+              
+    Message:
+      description: >-
+        Message object.
+      type: object
+      allOf:
+        - properties:
+            attachment:
+              description: >-
+                attachment object. Previews the URL. Used to send messages with media or Structured Messages. Notes: text or attachment must be set
+              $ref: '#/components/schemas/Attachment'
+            metadata:
+              type: string
+              description: >-
+                Custom string that is delivered as a message echo. 1000 character limit
+              minLength: 0
+              maxLength: 1000
+            quick_replies:
+              type: array
+              description: >-
+                Array of quick_reply to be sent with messages
+            text:
+              type: string
+              description: >-
+                Message text. Previews will not be shown for the URLs in this field. Use attachment instead. Must be UTF-8 and has a 2000 character limit. Notes: text or attachment must be set
+              minLength: 0
+              maxLength: 2000
+              
+    MessageContactDTO:
+      description: >-
+        The message contact structure.
+      type: object
+      allOf:
+        - properties:
+            chatId:
+              type: string
+              description: >-
+                The chatId.
+              example: “c7f67187-2e19-4945-a49e-409e81fce8f4”
+            userContact:
+              type: string
+              description: >-
+                The contact.
+              example: “+91772000035”
+
+    
+    PaginatedResult«CampaignWithStatistics»:
+      description: >-
+        This object represents a paginated response to a request. The items property will contain found results.
+      type: object
+      allOf:
+        - properties:
+            items:
+              type: array
+              description: >-
+                The returned items.
+            itemsReturned:
+              type: integer
+              description: >-
+                The number of returned items.
+              example: 20
+            offset:
+              type: integer
+              description: >-
+                Number of elements “skipped”.
+              example: 2
+            totalItems:
+              type: integer
+              description: >-
+                The total number of items found.
+              example: 1000
+              
+    PaginatedResult«CategorySimpleViewDTO»:
+      description: >-
+        This object represents a paginated response to a request. The items property will contain found results.
+      type: object
+      allOf:
+        - properties:
+            items:
+              type: array
+              description: >-
+                The returned items.
+            itemsReturned:
+              type: integer
+              description: >-
+                The number of returned items.
+              example: 20
+            offset:
+              type: integer
+              description: >-
+                Number of elements “skipped”.
+              example: 2
+            totalItems:
+              type: integer
+              description: >-
+                The total number of items found.
+              example: 1000
+              
+    Payload:
+      description: >-
+      type: object
+      
+    
+    PersistentMenuEntryDTO:
+      description: >-
+        The structure for each element of the persistent menu.
+      type: object
+      allOf:
+        - properties:
+            action:
+              description: >-
+                The action structure.
+              $ref: '#/components/schemas/ActionDTO'
+            nested:
+              description: >-
+              $ref: '#/components/schemas/PersistentMenuNestedDTO'  
+            reply:
+              description: >-
+                The reply structure.
+              $ref: '#/components/schemas/ReplyDTO'
+      
+    PersistentMenuNestedDTO:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            displayText:
+              type: string
+            entries:
+              type: array
+              $ref: '#/components/schemas/PersistentMenuEntryDTO'
+      
+      
+    RCSMessageDTO:
+      description: >-
+        The rcs message structure.
+      type: object
+      allOf:
+          - properties:
+            audioMessage:
+              description: >-
+                The RCS audio message.
+              $ref: '#/components/schemas/AudioMessageDTO'
+            expiry:
+              type: string
+              description: >-
+                The is the expiry of the message. The Chatbot Platform will try to revoke this message after this expiry.
+              example: “2019-09-26T01:46:04.868Z”
+            fileMessage:
+              description: >-
+                The RCS file transfer.
+              $ref: '#/components/schemas/FileMessageDTO'
+            geolocationPushMessage:
+              description: >-
+                The RCS geolocation push.
+              $ref: '#/components/schemas/GeolocationPushMessageDTO'
+            isTyping:
+              type: enum
+              description: >-
+                The isTyping notification to be sent to the user for the given Chat, or the isTyping notification received from the user for the given Chat.
+              example: “ACTIVE”
+            msgId:
+              type: string
+              description: >-
+            richcardMessage:
+              description: >-
+                The the Rich Card JSON object.
+              $ref: '#/components/schemas/RichcardMessageDTO'
+            sharedData:
+              description: >-
+                The Shared Data. This can only be sent from the user to the Chatbot.
+              $ref: '#/components/schemas/SharedDataDTO'
+            status:
+              type: enum
+              description: >-
+                The status of the message.
+              example: “SENT”
+            suggestedChipList:
+              description: >-
+                The Suggested Chip List. The Chatbot shall not send a chip list alone, it needs to be sent with one of the following structures: textMessage/audioMessage/fileMessage/geolocationPushMessage/richcardMessage.
+              $ref: '#/components/schemas/SuggestedChipListDTO'
+            suggestedResponse:
+              description: >-
+                The the Suggested Response. This can only be sent from the user to the Chatbot.
+              $ref: '#/components/schemas/SuggestedResponseDTO'
+            textMessage:
+              type: string
+              description: >-
+                This is a normal RCS text based Chat message.
+              example: “text message”
+            timestamp:
+              type: string
+              description: >-
+                This is the last date-time the message is updated.
+              example: “2019-09-26T01:46:04.868Z”
+            trafficType:
+              type: enum
+              description: >-
+                The traffic type.
+              example: “ADVERTISEMENT”
+
+
+            
+      
+    PersonalContactCard:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            org-details:
+              description: >-
+                Organization Details
+              $ref: '#/components/schemas/OrganizationDetails'
+            pcc-type:
+              type: string
+              description: >-
+                organization
+                
+                
+    OrganizationDetails:
+      description: >-
+        The OrganizationDetails structure.
+      type: object
+      allOf:
+        - properties:
+            comm-addr:
+              description: >-
+                The comm-addr field.
+                $ref: '#/components/schemas/CommonAddress'
+            external-properties:
+              description: >-
+                External Properties - an extension to the rcs chatbot info
+                $ref: '#/components/schemas/ExternalProperties'
+            media-list:
+              description: >-
+                The media-list field.
+                $ref: '#/components/schemas/MediaEntries'
+            name:
+              description: >-
+                The name field.
+                $ref: '#/components/schemas/Name'
+            org-description:
+              type: string
+              description: >-
+                The org-description field.
+            web-resources:
+              description: >-
+                The web-resources field.
+                $ref: '#/components/schemas/WebResources'
+
+
+    WebResources:
+      description: >-
+        The WebResources structure.
+      type: object
+      allOf:
+        -properties:
+            web-entry:
+              type: array
+              description: >-
+                The web-entry field.
+
+
+            
+    Name:
+      description: >-
+        The Name structure.
+      type: object
+      allOf:
+        - properties:
+            name-entry:
+              description: >-
+                The name-entry field.
+              $ref: '#/components/schemas/NameEntry'
+    
+    NameEntry:
+      description: >-
+        The NameEntry structure.
+      type: object
+      allOf:
+        - properties:
+            display-name:
+              type: string
+              description: >-
+                The displayName field.
+              example: “Service Name”
+    
+    
+              
+    MediaEntries:
+      description: >-
+        The MediaEntries structure.
+      type: object
+      allOf:
+        - properties:
+            media-entry:
+              type: array
+              description: >-
+                The media-entry list.
+
+
+            
+              
+    ExternalProperties:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            address:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 500
+              example: “Taveiro, Portugal”
+            addressCoordinates:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 255
+              example: “40.1939293,-8.511088400000062”
+            allowCallABot:
+              type: boolean
+              description: >-
+              example: true
+            allowOperatorMessaging:
+              type: boolean
+              description: >-
+              example: true
+            allowSubscribers:
+              type: boolean
+              description: >-
+              example: true
+            featureImage:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 500
+              example: “https://dummy.url.com/featureImage.jpg“
+            featured:
+              type: boolean
+              description: >-
+              example: false
+            firstMessage:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 255
+              example: “START”
+            new:
+              type: boolean
+              description: >-
+            nickname:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 50
+              example: “@testbot”
+            persistentMenu:
+              description: >-
+              $ref: '#/components/schemas/PersistentMenuDTO'
+            shortMessage:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 4000
+              example: “Just do it!”
+            subscribed:
+              type: boolean
+              description: >-
+              example: false
+            subscribers:
+              type: integer
+              description: >-
+              example: 3500
+            verified:
+              type: boolean
+              description: >-
+              example: true
+            welcomeImage:
+              type: string
+              description: >-
+              minLength: 0
+              maxLength: 255
+              example: “https://dummy.url.com/image.jpg“
+
+    
+    
+    
+    PersistentMenuDTO:
+      description: >-
+        The structure for the persistent menu.
+      type: object
+      allOf:
+        - properties:
+            entries:
+              type: array
+              description: >-
+                The number of elements of the persistent menu.
+
+        
+          
+    CommonAddress:
+      description: >-
+      type: object
+      allOf:
+        - properties:
+            tel:
+              $ref: '#/components/schemas/Telephone' 
+            uri-entry:
+              type: array
+              
+    Telephone:
+      description: >-
+        The Telephone structure.
+      type: object
+      allOf:
+        - properties:
+            label:
+              type: string
+              description: >-
+                The label field.
+              example: “Callback”
+            tel-nb:
+              description: >-
+                The tel-nb field.
+              $ref: '#/components/schemas/TelephoneNumber'
+            tel-type:
+              type: string
+              description: >-
+                The tel-type field.
+              example: “Work”
+              
+    TelephoneNumber:
+      description: >-
+        The TelephoneNumber structure.
+      type: object
+      allOf:
+        - properties:
+            tel-str:
+              type: string
+              description: >-
+                The tel-str field.
+              example: “1-800-555-1213”
+
+              
+
+            
+    ReasonDTO:
+      description: >-
+        The Reason structure. Is used to provide additional information regarding the HTTP response.
+      type: object
+      allOf:
+        - properties:
+            code:
+              type: integer
+              description: >-
+                The reason code.
+              example: “VALIDATION_ERROR”
+            text:
+              type: string
+              description: >-
+                The text description of the given reason.
+              example: “The account doesn’t exists”
+            
+              
     CampaignViewDTO:
       description: >-
         This resource represents a campaign view.
       type: object
       allOf:
-        - properties:
+          - properties:
             account:
               description: >-
               $ref: '#/components/schemas/AccountSimpleDTO'
@@ -1511,7 +2371,7 @@ components:
         The Sticker structure. Used to store information about the sticker that will be sent.
       type: object
       allOf:
-        - properties:
+          - properties:
             contenttype:
               type: string
               description: >-
@@ -1560,7 +2420,7 @@ components:
         The DeviceSpecifics structure
       type: object
       allOf:
-        - properties:
+          - properties:
             batteryRemainingMinutes:
               type: integer
               description: >-
@@ -1648,7 +2508,7 @@ components:
         The layout of the rich card.
       type: object
       allOf:
-        - properties:
+          - properties:
             cardOrientation:
               type: enum
               description: >-
@@ -1752,7 +2612,7 @@ components:
         The rich card media structure.
       type: object
       allOf:
-        - properties:
+          - properties:
             contentDescription:
               type: string
               description: >-
@@ -1886,6 +2746,28 @@ components:
               example: “http://www.example.com/files/test.jpg“
 
 
+    User:
+      description: >-
+        Description of the message recipient. All requests must include one of id, phone_number, or user_ref.
+      type: object
+      allOf:
+        - properties:
+            id:
+              type: string
+              description: >-
+                Either PSID, phone_number, or user_ref of the message recipient
+            name:
+              description: >-
+                Used only if phone_number is set. Specifies the person’s name in the format: {“first_name”:”John”, “last_name”:”Doe”}
+              $ref: '#/components/schemas/Name'
+            phone_number:
+              type: string
+              description: >-
+                Phone number of the recipient with the format +1(212)555-2368
+            user_ref:
+              type: string
+              description: >-
+                user_ref from the checkbox plugin (https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin)
 
 
 
@@ -2037,15 +2919,15 @@ components:
             dialEnrichedCall:
               description: >-
                 The structure to start an Enriched Call via the user’s dialler app
-              $ref: '#/components/schemas/DialEnrichedCallDTO'
+                $ref: '#/components/schemas/DialEnrichedCallDTO'
             dialPhoneNumber:
               description: >-
                 The structure to call a phone number via the user’s dialler app.
-              $ref: '#/components/schemas/DialPhoneNumberDTO'
+                $ref: '#/components/schemas/DialPhoneNumberDTO'
             dialVideoCall:
               description: >-
                 The structure to start a video call via the user’s dialler app.
-              $ref: '#/components/schemas/DialVideoCallDTO'
+                $ref: '#/components/schemas/DialVideoCallDTO'
 
 
     DialEnrichedCallDTO:
@@ -2119,7 +3001,7 @@ components:
             requestDeviceSpecifics:
               description: >-
                 request for a one-time share of device specifics (device model, operating system version, messaging client identifier and version, and remaining battery charge in minutes)
-              $ref: '#/components/schemas/RequestDeviceSpecificsDTO'
+                $ref: '#/components/schemas/RequestDeviceSpecificsDTO'
 
 
     ComposeActionDTO:
@@ -2131,11 +3013,11 @@ components:
             composeRecordingMessage:
               description:  >-
                 Compose a draft message and start recording audio or video.
-              $ref: '#/components/schemas/ComposeRecordingMessageDTO'
+                $ref: '#/components/schemas/ComposeRecordingMessageDTO'
             composeTextMessage:
               description:  >-
                 Compose a draft text message.
-              $ref: '#/components/schemas/ComposeTextMessageDTO'
+                $ref: '#/components/schemas/ComposeTextMessageDTO'
 
 
     ComposeRecordingMessageDTO:
@@ -2143,7 +3025,7 @@ components:
         The ComposeRecordingMessage structure
       type: object
       allOf:
-        - properties:
+          - properties:
             phoneNumber:
               type: string
               description: >-

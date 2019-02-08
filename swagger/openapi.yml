@@ -31,7 +31,7 @@ paths:
         '200':
           description: >-
             Success Contacts fetched successfully
-          # $ref: '#/components/schemas/AccountOverviewSimpleViewDTO'
+          
         '400':
           description: >-
             Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
@@ -139,7 +139,6 @@ paths:
             type: integer (int32)
           description: Max number of results to be retrieved.
           example: 10
-                    #offset
         - in: query
           name: offset
           schema:
@@ -151,15 +150,14 @@ paths:
           name: order
           schema:
             type: string
-          description: Results order. Format: <field>:<desc|asc>. The selected fields can be: CampaignStatusDate, scheduleInitDate and title. The campaigns can be sorted by ascending or descending order for the selected field.
+          description: Results order. Format; <field>:<desc|asc>. The selected fields can be; CampaignStatusDate, scheduleInitDate and title. The campaigns can be sorted by ascending or descending order for the selected field.
           example: campaignStatusDate:asc
           Length: 0-23
-#ステータス
         - in: query
           name: status
           schema:
             type: < enum (DRAFT, PREPARING, WAITING, IN_PROGRESS, FINISHED, CANCELLED, FAILED, DONE_SENT_WAITING_REVOCATION, REVOKING, PAUSED, CANCELLED_WITH_REVOKE) > array(multi)
-          description: Filter campaigns by their status. 
+          description: Filter campaigns by their statutus.
           example: IN_PROGRESS
           
       responses:
@@ -223,6 +221,7 @@ paths:
           required:
                 - csv
           required: true
+
       responses:
         '200':
           description: >-
@@ -230,16 +229,23 @@ paths:
         '400':
           description: >-
             Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+          schema:
+          type: ApiErrorInfo            
             # $ref: '#/components/schemas/ApiErrorInfo'
         '401':
           description: >-
             Unauthorized The request requires user authentication.
+          schema:
+          type: ApiErrorInfo
             # $ref: '#/components/schemas/ApiErrorInfo'
         '500':
           description: >-
             Internal Server Error prevents the server from processing the request.
+          schema:
+          type: ApiErrorInfo
             # $ref: '#/components/schemas/ApiErrorInfo'
     # Getキャンペーン
+/a2p/campaigns/{campaignId}:  
     get:
       tags:
         - A2P Campaigns API
@@ -272,25 +278,36 @@ paths:
         '200':
           description: >-
             Success CampaignDTO fetched successfully
+          schema:
+          type: CampaignDTO           
           # $ref: '#/components/schemas/CampaignDTO'
         '400':
           description: >-
             Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
-            # $ref: '#/components/schemas/Identifier'
+          schema:
+          type: ApiErrorInfo
+            # $ref: '#/components/schemas/ApiErrorInfo'
         '401':
           description: >-
             Unauthorized The request requires user authentication.
+          schema:
+          type: ApiErrorInfo
             # $ref: '#/components/schemas/ApiErrorInfo'
         '404':
           description: >-
             Not Found requested campaign.
+          schema:
+          type: ApiErrorInfo
             # $ref: '#/components/schemas/ApiErrorInfo'
         '500':
           description: >-
             Internal Server Error prevents the server from processing the request.
+          schema:
+          type: ApiErrorInfo
             # $ref: '#/components/schemas/ApiErrorInfo'
-    # Delete draft campaign.
-     /a2p/campaigns/{campaignId}:
+  
+    # Delete draft campaign
+  /a2p/campaigns/{campaignId}: 
     delete:
       tags:
         - A2P Campaigns API
@@ -301,7 +318,8 @@ paths:
           name: campaign identifier
           schema:
             type: integer (int64)
-            description: >-Campaign identifier
+            description: >
+            -Campaign identifier
           required: true
       responses:
         '200':
@@ -314,7 +332,7 @@ paths:
         '401':
           description: >-
             Unauthorized The request requires user authentication.
-            # $ref: '#/components/schemas/ApiErrorInfo'
+            $ref: '#/components/schemas/ApiErrorInfo'
         '404':
           description: >-
             Not Found requested campaign.
@@ -546,7 +564,11 @@ paths:
     post:
       tags:
         - Facebook Send API V1.4
-        parameters:
+      summary: >-
+        Send Message
+      description: >-
+        Send a message to given user.
+         parameters:
         - in: body
           name: message
           schema:
@@ -555,10 +577,6 @@ paths:
             description: >-
             message
           required: true
-      summary: >-
-        Send Message
-      description: >-
-        Send a message to given user.
       responses:
         '200':
           description: >-
@@ -576,32 +594,6 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-  # Facebook Send API V1.4
-  # /bots/send:
-  #   post:
-  #     tags:
-  #       - Facebook Send API V1.4
-  #     summary: >-
-  #       Send Message with file
-  #     description: >-
-  #       Send a message with a file to given user.
-  #     responses:
-  #       '200':
-  #         description: >-
-  #           Success
-  #         # $ref: '#/components/schemas/  FacebookIncomingMessageResponse'
-  #       '400':
-  #         description: >-
-  #           Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
-  #       '401':
-  #         description: >-
-  #           Unauthorized The request requires user authentication.
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
-  #       '500':
-  #         description: >-
-  #           Internal Server Error prevents the server from processing the request.
-  #           # $ref: '#/components/schemas/ApiErrorInfo'
   
   # FACEBOOK Send Message with file
   /bots/send:
@@ -647,13 +639,17 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
-
+            
  #facebook 2.3
   # Attachment Upload from URL
   /facebook/bot/v2.3/message_attachments:
     post:
       tags:
         - Facebook Send API V2.3        
+      summary: >-
+        Attachment Upload from URL
+      description: >-
+        Upload assets from URL that can be sent in messages at a later time.
         parameters:
         - in: body
           name: message
@@ -662,11 +658,7 @@ paths:
             $ref: '#/components/schemas/FacebookUploadRequest'
             description: >-
             message
-          required: true        
-      summary: >-
-        Attachment Upload from URL
-      description: >-
-        Upload assets from URL that can be sent in messages at a later time.
+          required: true
       responses:
         '200':
           description: >-
@@ -684,6 +676,52 @@ paths:
           description: >-
             Internal Server Error prevents the server from processing the request.
             # $ref: '#/components/schemas/ApiErrorInfo'
+            
+        #Attachment Upload
+  /facebook/bot/v2.3/message_attachments:
+    post:
+      tags:
+        - Facebook Send API V2.3
+      summary: >-
+      Attachment Upload
+      description: >-
+        Upload assets that can be sent in messages at a later time.
+      parameters:
+        - in: formdata
+          name: message
+          schema:
+            type:   FacebookUploadRequest
+            $ref: '#/components/schemas/FacebookUploadRequest'
+            description: >-
+            Message object
+          required: true         
+          parameters:
+        - in: formdata
+          name: file
+          schema:
+            type: file
+      description: >-
+            filedata
+            required: true      
+      responses:
+        '200':
+          description: >-
+            Success
+          # $ref: '#/components/schemas/FacebookMessageResponse'
+        '400':
+          description: >-
+            Bad Request The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '401':
+          description: >-
+            Unauthorized The request requires user authentication.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+        '500':
+          description: >-
+            Internal Server Error prevents the server from processing the request.
+            # $ref: '#/components/schemas/ApiErrorInfo'
+            
+      
       
        #Attachment Upload
   /facebook/bot/v2.3/message_attachments:
@@ -800,7 +838,6 @@ paths:
           description: >-
           Internal Server Error prevents the server from processing the request.
            $ref: '#/components/schemas/ApiErrorInfo'
-
   #RCS Bot API
   # Operations about capability
   /rcs/bot/v1/{botId}/contactCapabilities:
@@ -1185,8 +1222,10 @@ paths:
           description: >-
             Server Error
             # $ref: '#/components/schemas/    RCSMessageWithContactInfoResponseDTO'
-  # 続きここから!!!
+  
+  
   # RCS Chatbot Directory API:
+  #Chatbot Information Retrievals
   /rcs/bot/status:
     get:
       tags:
@@ -1241,10 +1280,10 @@ paths:
         '500':
           description: >-
            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
-
             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
             
-    # RCS Chatbot Directory API: Infor Retrievals by nickname
+    # RCS Chatbot Directory API: 
+    #Info Retrievals by nickname
   /rcs/bot/status:
     get:
       tags:
@@ -1296,9 +1335,8 @@ paths:
         '500':
           description: >-
            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
-
             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
-            
+ #0208 ここから           
     # Get the categories
   /rcs/categories/status:
     get:
@@ -1326,13 +1364,37 @@ paths:
             Example: RCSAndrd-1.0
           #required: optional
            - in: query
-          name: nickname
+          name: hl
           schema:
             type: string
             description: >-
-            Nickname. 
-            Example: @newsbot
-          required: true       
+            Locale defined as ISO 639-1. Used to control the language of the provided query results. 
+            Example: en
+          required: true
+           - in: query
+          name: ho
+          schema:
+            type: string
+            description: >-
+            Home operator of the device and this shall be represented as <MCCMNC> combination. Whereby MCC and MNC shall be replaced by the respective values of the home network in decimal format and with a 2-digit MNC padded out to 3 digits by inserting a 0 at the beginning. 
+            Example: 370270
+          #required: optional
+          - in: query
+          name: num
+          schema:
+            type: integer (int32)
+            description: >-
+            The num parameter identifies the number of query objects to return. If not provided, the num value is determined by the server. 
+            Example: 10
+          #required: optional
+           - in: query
+          name: start
+          schema:
+            type: integer (int32)
+            description: >-
+            The start parameter indicates the first matching result that should be included in the query results. It uses a zero-based index, meaning the first result is 0, the second result is 1 and so forth. The start parameter works in conjunction with the num parameter to determine which query results to return.
+            Example: 0
+          # required: optional
       responses:
         '200':
           description: >-
@@ -1349,30 +1411,132 @@ paths:
         '500':
           description: >-
            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
-
             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
             
-    # Get the categories
-  /rcs/chatbots/status:
+    # Chatbot Directory to retrieve the list of available Chatbots
+  /rcs/chatbots/chatbots:
     get:
       tags:
         - RCS Chatbot Directory API
-      parameters:
-        - in: path
-          name: botId
-          schema:
-            type: string
-            description: >-
-          required: true
-        - in: path
-          name: msgId
-          schema:
-            type: string
-            description: >-
-          required: true
       summary: >-Chatbot Directory to retrieve the list of available Chatbots
       description: >-
             This endpoint has an optional authentication that will allow to identify the user and thus returning an extended version of each chatbot.
+       parameters:
+         - in: query
+          name: callABot
+          schema:
+            type: boolean
+            description: >-
+            Query parameter that indicates if only chatbots with call a bot capabilities should be included in the query results. Example: true
+          #required: optional
+          - in: query
+          name: category
+          schema:
+            type: integer (int64)
+            description: >-
+            Query parameter that can specify a category id to filter the query results. Example: 3
+        - in: query
+          name: chatbot_version
+          schema:
+            type: string
+            description: >-
+            Contains the Chatbot application version the client support. If not provided, then it means only version 1 is supported. The version parameter shall be composed as follows; 
+            version = versionnumber * [ ““ version_number ] version_number = 1*DIGIT. 
+            Example: 1
+          #required: optional
+           - in: query
+          name: client_vendor
+          schema:
+            type: string
+            description: >-
+            Contains the query client_version HTTP GET parameter included in the configuration requests. 
+            Example: VNDR
+          #required: optional
+           - in: query
+          name: client_version
+          schema:
+            type: string
+            description: >-
+            Contains the query client_version HTTP GET parameter included in the configuration requests. 
+            Example: RCSAndrd-1.0
+          #required: optional
+           - in: query
+          name: featured
+          schema:
+            type: boolean
+            description: >-
+            Query parameter that indicates if only featured or non featured chatbots should be included in the query results. Example: true
+          # required: optional
+           - in: query
+          name: hl
+          schema:
+            type: string
+            description: >-
+            Locale defined as ISO 639-1. Used to control the language of the provided query results. 
+            Example: en
+          required: true
+           - in: query
+          name: ho
+          schema:
+            type: string
+            description: >-
+            Home operator of the device and this shall be represented as <MCCMNC> combination. Whereby MCC and MNC shall be replaced by the respective values of the home network in decimal format and with a 2-digit MNC padded out to 3 digits by inserting a 0 at the beginning. 
+            Example: 370270
+          #required: optional
+           - in: query
+          name: new
+          schema:
+            type: boolean
+            description: >-
+            Query parameter that indicates if only new chatbots should be included in the query results. Example: true
+            Example: 10
+          #required: optional
+          - in: query
+          name: num
+          schema:
+            type: integer (int32)
+            description: >-
+            The num parameter identifies the number of query objects to return. If not provided, the num value is determined by the server. 
+            Example: 10
+          #required: optional
+           - in: query
+          name: q
+          schema:
+            type: string
+            description: >-
+            Query terms that can specify words or phrases to filter the query results that the Chatbot Directory returns. The value must be URL-escaped. Example: news.
+          # required: optional
+           - in: query
+          name: recommended
+          schema:
+            type: boolean
+            description: >-
+            Query parameter that indicates if only new chatbots should be included in the query results.
+            Example: true
+          #required: optional
+           - in: query
+          name: sort
+          schema:
+            type: enum (NUMBER_OF_SUBSCRIPTIONS_DESC, NAME, FEATURED, RECOMMENDED, CREATION_DATE, STARTED_DATE)
+            description: >-
+            The sort criteria to use. 
+            Example: NUMBER_OF_SUBSCRIPTIONS_DESC
+          #required: optional
+          - in: query
+          name: start
+          schema:
+            type: integer (int32)
+            description: >-
+            The start parameter indicates the first matching result that should be included in the query results. It uses a zero-based index, meaning the first result is 0, the second result is 1 and so forth. The start parameter works in conjunction with the num parameter to determine which query results to return. Example: 0
+          #required: optional
+           - in: query
+          name: subscribed
+          schema:
+            type: boolean
+            description: >-
+            Query parameter that indicates if only subscribed or non subscribed chatbots by the user should be included in the query results. 
+            Example: true
+          #required: optional
       responses:
         '200':
           description: >-
@@ -1393,7 +1557,6 @@ paths:
         '500':
           description: >-
            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
-
             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
             
   # Get accuont overview
@@ -1404,6 +1567,47 @@ paths:
       summary: >-Get accounts overview
       description: >-
             Retrieve the “home page” data that will be shown on the APPs Bots & Brand Store.
+       parameters:
+         - in: query
+          name: client_vendor
+          schema:
+            type: string
+            description: >-
+            Contains the query client_version HTTP GET parameter included in the configuration requests. 
+            Example: VNDR
+          #required: optional
+           - in: query
+          name: client_version
+          schema:
+            type: string
+            description: >-
+            Contains the query client_version HTTP GET parameter included in the configuration requests. 
+            Example: RCSAndrd-1.0
+          #required: optional
+           - in: query
+          name: hl
+          schema:
+            type: string
+            description: >-
+            Locale defined as ISO 639-1. Used to control the language of the provided query results. 
+            Example: en
+          required: true
+           - in: query
+          name: ho
+          schema:
+            type: string
+            description: >-
+            Home operator of the device and this shall be represented as <MCCMNC> combination. Whereby MCC and MNC shall be replaced by the respective values of the home network in decimal format and with a 2-digit MNC padded out to 3 digits by inserting a 0 at the beginning. 
+            Example: 370270
+          #required: optional
+          - in: query
+          name: num
+          schema:
+            type: integer (int32)
+            description: >-
+            The num parameter identifies the number of query objects to return. If not provided, the num value is determined by the server. 
+            Example: 10
+          #required: optional
       responses:
         '200':
           description: >-
@@ -1420,7 +1624,6 @@ paths:
         '500':
           description: >-
            Internal Server Error The server encountered an unexpected condition which prevented it from fulfilling the request.
-
             # $ref: '#/components/schemas/  RCSMessageWithContactInfoResponseDTO'
             
   
@@ -1484,7 +1687,7 @@ components:
               description: >-
               example: true
 
-
+#例
 
     ActionDTO:
       description: >-
@@ -1531,30 +1734,779 @@ components:
                 The url action dto.
               $ref: '#/components/schemas/UrlActionDTO'
 
-    ApiErrorInfo:
+#ここからDefinitions
+
+    FacebookIncomingAddress:
       description: >-
-        The ApiErrorInfo structure.
+        The FacebookIncomingAddress structure.
       type: object
       allOf:
         - properties:
-            code:
+           city:
               type: string
               description: >-
-                The code of the error.
-              example: “VALIDATION_ERROR”
-            errorMessage:
+                The city field.
+           country:
               type: string
               description: >-
-                The description of the error.
-              example: "rcsMessage Needs one of the following fields: textMessage, fileMessage, audioMessage, geolocationPushMessage, richcardMessage or stickerMessage."
-            errors:
-              type: array
+                The country field.
+            postal_code:
+              type: string
               description: >-
-                List of errors.
-            validationErrors:
-              type: array
+                The postal_code field.
+            state:
+              type: string
               description: >-
-                List of validation errors.
+                The state field.
+                street_1:
+              type: string
+              description: >-
+                The street_1 field.
+            street_2:
+              type: string
+              description: >-
+                The street_2 field.
+                
+      FacebookIncomingAdjustment:
+        description: >-
+         The FacebookIncomingAdjustment structure.
+       type: object
+       allOf:
+         - properties:
+            amount:
+               type: number (double)
+               description: >-
+                The amount field.
+            name:
+               type: string
+               description: >-
+                The name field.
+                
+      FacebookIncomingAttachment:
+        description: >-
+         The FacebookIncomingAttachment structure.
+       type: object
+       allOf:
+         - properties:
+            infinite_carousel:
+               type: boolean
+               description: >-
+                The infinite_carousel field.
+                Example : false
+            infinite_parameters:
+               type: FacebookIncomingInfiniteParameters
+                $ref: '#/components/schemasFacebookIncomingInfiniteParameters'
+               description: >-
+                The infinite_parameters structure.
+            payload:
+               type: enum (image, video, audio, file, template)
+               description: >-
+                The type field.
+                Example : “IMAGE”
+                
+      FacebookIncomingButton:
+        description: >-
+         The FacebookIncomingButton structure.
+       type: object
+       allOf:
+         - properties:
+            fallback_url:
+               type: string
+               description: >-
+                The fallback_url field.
+                Example : “http://example.com/test“
+            messenger_extensions:
+               type: boolean
+               description: >-
+                The messenger_extensions field.
+                Example : true
+               payloadl:
+               type: string
+               description: >-
+                The payload field.
+                Example : “postback”
+            payment_summary:
+               type: FacebookIncomingPaymentSummary
+                $ref: '#/components/schemas/FacebookIncomingPaymentSummary'
+               description: >-
+                The payment_summary structure.
+                Example : true
+            title:
+               type: string
+               description: >-
+                The title field.
+                Length : 0 - 20
+                Example : “Button”
+            type: 
+               type: enum (web_url, postback, phone_number, element_share, payment, account_link, account_unlink)
+               description: >-
+                The type field.
+                Example : “WEB_URL”
+            url:
+               type: string
+               description: >-
+                The url field.
+                Example : “http://example.com/test“
+            webview_height_ratio:
+               type: enum (compact, tall, full)
+               description: >-
+                The webview_height_ratio field.
+                Example : “COMPACT”
+                
+     FacebookIncomingDefaultAction:
+        description: >-
+         The FacebookIncomingDefaultAction structure.
+       type: object
+       allOf:
+         - properties:
+            fallback_url:
+               type: string
+               description: >-
+                The fallback_url field.
+            messenger_extensions:
+               type: boolean
+               description: >-
+                The messenger_extensions field.
+            payment_summary:
+               type: 	FacebookIncomingPaymentSummary
+                $ref: '#/components/schemas/FacebookIncomingPaymentSummary'
+               description: >-
+               The payment_summary structure.
+            type:
+               type: enum (web_url, postback, phone_number, element_share, payment, account_link, account_unlink)
+               description: >-
+                The type field.
+                Example : “WEB_URL”
+            url:
+               type: string
+               description: >-
+                The url field.
+            webview_height_ratio: 
+               type: enum (web_url, postback, phone_number, element_share, payment, account_link, account_unlink)
+               description: >-
+                The webview_height_ratio field.
+                Example : “COMPACT”
+
+      FacebookIncomingElement:
+        description: >-
+         The FacebookIncomingElement structure.
+       type: object
+       allOf:
+         - properties:
+            buttons:
+               type: < FacebookIncomingButton >$ref: '#/components/schemas/FacebookIncomingButton' array
+               description: >-
+                The buttons structure.
+             currency:
+               type: string
+               description: >-
+                The currency field.
+             default_action:
+               type: string
+               description: >-
+               FacebookIncomingDefaultAction
+               $ref: '#/components/schemas/FacebookIncomingDefaultAction'
+             image_url:
+               type: string
+               description: >-
+                The image_url field.
+             image_url:
+               type: string
+               description: >-
+                The image_url field.                
+             price:
+               type: number (double)
+               description: >-
+                The price field.
+             quantity: 
+               type: number (double)
+               description: >-
+                The quantity field.
+             subtitle:
+               type: string
+               description: >-
+                The subtitle field.
+                Length : 0 - 80
+             title:
+               type: string
+               description: >-
+                The subtitle field.
+                Length : 0 - 80
+
+      FacebookIncomingInfiniteParameters:
+        description: >-
+         The FacebookIncomingInfiniteParameters structure.
+       type: object
+       allOf:
+         - properties:
+            next_page_cursor:
+               type: string
+               description: >-
+                The nextPageCursor field.
+            next_request_url:
+               type: string
+               description: >-
+                The next_request_url field.
+            requested_payload:
+               type: 	string
+               description: >-
+               The requested_payload field.
+               
+      FacebookIncomingMessage:
+        description: >-
+         The FacebookIncomingMessage structure.
+       type: object
+       allOf:
+         - properties:
+            attachment:
+               type: FacebookIncomingAttachment
+               $ref: '#/components/schemas/FacebookIncomingAttachment' 
+               description: >-
+                The attachment structure.
+            metadata:
+               type: string
+               description: >-
+                The metadata field.
+            quick_replies:
+               type: <  FacebookIncomingQuickReply >$ref: '#/components/schemas/F FacebookIncomingQuickReply' array
+               description: >-
+               The quick_replies structure.
+            text:
+               type: string
+               description: >-
+                The image_url field.
+                
+      FacebookIncomingMessageRequest:
+        description: >-
+       type: object
+       allOf:
+         - properties:
+            message:
+               type: FacebookIncomingMessage
+               $ref: '#/components/schemas/FacebookIncomingMessage' 
+               description: >-
+             notification_type:
+               type: enum (REGULAR, SILENT_PUSH, NO_PUSH)
+               description: >-
+                The metadata field.
+             recipient:
+               type: FacebookIncomingRecipient
+               ref: '#/FacebookIncomingRecipient'
+               description: >-
+             sender_action:
+               type: enum (mark_seen, typing_on, typing_off)
+               description: >-
+               
+      FacebookIncomingMessageResponse:
+          description: >-
+           The FacebookIncomingMessageResponse structure. The returned value from the facebook endpoint.
+         type: object
+         allOf:
+           - properties:
+              attachment_id:
+                type: string
+                description: >-
+                The attachment_id field.
+              message_id:
+                 type: string
+                 description: >-
+                The message_id field.
+              recipient_id:
+                 type: string
+                 description: >-
+              sender_action:
+                 type: enum (mark_seen, typing_on, typing_off)
+                 description: >-
+                 The recipient_id field.
+                 
+                 
+      FacebookIncomingPayload:
+        description: >-
+         The FacebookIncomingPayload structure.
+        type: object
+        allOf:
+          - properties:
+             address:
+               type: FacebookIncomingAddress
+               $ref: '#/components/schemas/FacebookIncomingAddress'
+               description: >-
+                The address structure.
+             adjustments:
+               type:  <  FacebookIncomingAdjustment >$ref: '#/components/schemas/F FacebookIncomingAdjustment' array
+               description: >-
+                The adjustments structure list.
+             attachment_id:
+               type: string
+               description: >-
+               The attachment_id field.
+             buttons:
+               type:  <  FacebookIncomingButton >$ref: '#/components/schemas/F FacebookIncomingButton' array
+               description: >-
+               The buttons list.
+             currency:
+               type: string
+               description: >-
+               The currency field.
+             elements:
+                type:   <  FacebookIncomingElement >$ref: '#/components/schemas/F FacebookIncomingElement' array
+                description: >-
+                  The elements list.
+             is_reusable:
+               type: boolean
+               description: >-
+           merchant_name:
+               type: string
+               description: >-
+                The merchant_name field.
+            order_number:
+               type: string
+               description: >-
+                The order_number field.
+           order_url: 
+               type: string
+               description: >-
+                The order_url field.
+            payment_method:
+               type: string
+               description: >-
+                The payment_method field.
+            recipient_name:
+               type: string
+               description: >-
+                The recipient_name field.
+           summary:
+               type: 	FacebookIncomingSummary
+               $ref: '#/components/schemas/ FacebookIncomingSummary'
+               description: >-
+                The summary structure.
+            template_type:
+               type: enum (button, generic, list, receipt, airline_boardingpass, airline_checkin, airline_itinerary, airline_update)
+               description: >-
+                The template_type structure.
+           text: 
+               type: tring
+               description: >-
+                The text field.
+            timestamp:
+               type: string
+               description: >-
+                The timestamp field.
+            top_element_style:
+               type: enum (large, compact)
+               description: >-
+                The top_element_style field.
+                Example : “LARGE”
+            url:
+               type: string
+               description: >-
+                The url field.
+ 
+     FacebookIncomingPaymentSummary:
+        description: >-
+         The FacebookIncomingPaymentSummary structure.
+       type: object
+       allOf:
+         - properties:
+           currency:
+               type: string 
+               description: >-
+                The currency field.
+            is_test_payment:
+               type: boolean 
+               description: >-
+                The is_test_payment field.
+                Example : true              
+            merchant_name:
+               type: string
+               description: >-
+                The merchant_name field.
+            payment_type:
+               type: enum (FIXED_AMOUNT, FLEXIBLE_AMOUNT)
+               description: >-
+                The payment_type field.
+                Example : “FIXED_AMOUNT” 
+            price_list:
+               type: <  FacebookIncomingPriceList >$ref: '#/components/schemas/F FacebookIncomingPriceList' array
+               description: >-
+               The price_list list.
+            requested_user_info:
+               type: < enum (shipping_address, contact_name, contact_phone, contact_email) > array
+               description: >-
+                The requested_user_info list.
+                Example : “SHIPPING_ADDRESS”  
+  
+       FacebookIncomingPriceList:
+        description: >-
+         The FacebookIncomingPriceList structure.
+        type: object
+        allOf:
+          - properties:
+             amount:
+               type: string
+               $ref: '#/components/schemas/FacebookIncomingMessage' 
+               description: >-
+                The amount field.
+             label:
+               type: string
+               description: >-
+                The label field.
+  
+                
+        FacebookIncomingQuickReply:
+         description: >-
+          The FacebookIncomingQuickReply structure.
+        type: object
+        allOf:
+          - properties:
+            content_type:
+               type: enum (text, location)
+               description: >-
+                The content_type field.
+                Example : “LOCATION”
+            image_url:
+               type: string
+               description: >-
+                The image_url field.
+            payload:
+               type: string
+               description: >-
+                The payload field.
+            title:
+               type: string
+               description: >-
+                The title field.   
+                
+       FacebookIncomingRecipient:
+         description: >-
+         The FacebookIncomingRecipient structure.
+         type: object
+         allOf:
+           - properties:
+             id:
+              type: string
+              description: >-
+                The id field.
+                Example : “+999000000”
+             phone_number:
+               type: string
+               description: >-
+                The phone_number field.
+                Example : “+999000000”             
+
+ 
+      FacebookIncomingSummary:
+        description: >-
+         The FacebookIncomingSummary structure.
+       type: object
+       allOf:
+         - properties:
+           shipping_cost:
+               type: number (double)
+               description: >-
+                The shipping_cost field.
+                Example : “LOCATION”
+            subtotal:
+               type: number (double)
+               description: >-
+                The subtotal field.
+            total_cost:
+               type: number (double)
+               description: >-
+                The total_cost field.
+           total_tax:
+               type: number (double)
+               description: >-
+                The total_tax field.
+
+      FacebookMessageRequest:
+        description: >-
+         Used to send messages to users, including text, attachments, structured message templates, sender actions, and more.
+        type: object
+        allOf:
+         - properties:
+           message:
+               type: message
+               $ref: '#/components/schemas/message'
+               description: >-
+              message object. Notes Cannot be sent with sender_action
+           messaging_type:
+               type: enum (FIXED_AMOUNT, FLEXIBLE_AMOUNT)
+               description: >-
+                The messaging type of the message being sent
+            notification_type:
+               type: enum (REGULAR, SILENT_PUSH, NO_PUSH)
+               description: >-
+                Push notification type. Notes: Defaults to REGULAR
+            recipient:
+               type: User
+               $ref: '#/components/schemas/user'
+               description: >-
+                The merchant_name field.
+            sender_action:
+               type: enum (FIXED_AMOUNT, FLEXIBLE_AMOUNT)
+               description: >-
+                Message state to display to the user. Notes: Cannot be sent with message. Must be sent as a separate request. When using sender_action, recipient should be the only other property set in the request
+            tag:
+               type: string
+               description: >-
+               The message tag string
+ 
+ 
+          FacebookMessageResponse:
+        description: >-
+         A successful Send API request returns a JSON string containing identifiers for the message and its recipient.
+       type: object
+       allOf:
+         - properties:
+           attachment_id:
+               type: string
+               description: >-
+              The reusable attachment ID to be reused
+           error:
+               type: ErrorCode
+               $ref: '#/components/schemas/ErrorCode'
+               description: >-
+                Error structure
+            nmessage_id:
+               type: string
+               description: >-
+                Unique ID for the message
+            recipient_id:
+               type: string
+               $ref: '#/components/schemas/user'
+               description: >-
+                Unique ID for the user
+                
+          FacebookUploadRequest:
+        description: >-
+         The Attachment Upload supports saving assets via the Send API and Attachment Upload API. This allows you reuse assets, rather than uploading them every time they are needed. To attach a saved asset to a message, specify the attachment_id of the asset in the payload.attachment_id property of the message request
+       type: object
+       allOf:
+         - properties:
+           message:
+               type: FileMessage
+               $ref: '#/components/schemas/FileMessage'
+               description: >-
+               Description of the message to be sent
+                
+                
+                
+#途中からの項目
+          QuickReply:
+        description: >-
+         The structure for the quick reply element.
+       type: object
+       allOf:
+         - properties:
+          content_type:
+               type: enum (text, location, user_phone_number, user_email)
+               description: >-
+               The content_type structure.
+           image_url:
+               type: string
+               description: >-
+               The image_url field.
+               Example : “http://example.com/image“
+           payload:
+               type: string
+               description: >-
+               The payload field.
+               Length : 0 - 1000
+               Example : “set_by_chatbot” 
+            title:
+               type: string
+               description: >-
+               The title field.
+               Length : 0 - 20
+               Example : “quick reply”  
+               
+            RCSMessageStatusDTO:
+        description: >-
+         The rcs message status structure. Is Used to do operations related to the received or sent message.
+       type: object
+       allOf:
+         - properties:
+          status:
+               type: enum (displayed, cancelled)
+               description: >-
+               The status field operation.
+               
+               
+    RCSMessageWithContactInfoDTO:
+      description: >-
+      This resource represents rcs message and the contact object
+      type: object
+      allOf:
+        - properties:
+            RCSMessage:
+              type: RCSMessageDTO
+              $ref: '#/components/schemas/AudioMessageDTO'
+              description: >-
+                The rcs message.
+            messageContact:
+              type: 	MessageContactDTO
+              $ref: '#/components/schemas/MessageContactDTO'
+              description: >-
+                The message contact.
+
+    RCSMessageWithContactInfoResponseDTO:
+      description: >-
+      The RCSMessageWithContactInfoResponse structure.
+      type: object
+      allOf:
+        - properties:
+            RCSMessage:
+              type: RCSMessageDTO
+              $ref: '#/components/schemas/AudioMessageDTO'
+              description: >-
+                The rcs message.
+            reason:
+              type: 	ReasonDTO
+              $ref: '#/components/schemas/ReasonDTO'
+              description: >-
+                Additional information from the chatbot platform.
+                
+    RcsStatusUpdateDTO:
+      description: >-
+      The rcs message status update structure. Is Used to do operations related to the received or sent message.
+      type: object
+      allOf:
+        - properties:
+            RCSMessage:
+              type: RCSMessageStatusDTO
+              $ref: '#/components/schemas/RCSMessageStatusDTO'
+              description: >-
+                The rcs message field.
+                
+ 
+            RequestDeviceSpecificsDTO:
+        description: >-
+         The structure to request for a one-time share of device specifics(device model, operating system version, messaging client identifier and version, and remaining battery charge in minutes). The protocol doesn’t require any fields in this DTO.
+         type: object
+  
+         
+            RequestLocationPushDTO:
+        description: >-
+         The structure to request request for a one-time geo location push. The protocol doesn’t require any fields in this DTO.
+         type: object        
+ 
+  
+  
+            UploadFileDTO:
+        description: >-
+         The UploadFile structure. Used for return file upload information.
+         type: object       
+         allOf:
+          - properties:
+           fileUrl:
+               type: string
+               description: >-
+               The fileUrl.
+               Example : “https://witwcs.wit-software.com/cs/b6764742“
+            validity:
+               type: string (date-time)
+               description: >-
+               The validity.
+               
+             UriEntry:
+        description: >-
+         The UriEntry structure.
+         type: object       
+         allOf:
+          - properties:            
+            addr-uri:
+               type: string
+               description: >-
+               The addr-uri field.
+               Example : “sip:serviceid@example.com”
+             addr-uri-type:
+               type: enum (SIP-URI, Email, Other)
+               description: >-
+               TThe addr-uri-type field.
+               Example : “SIP-URI”             
+            custom-label:
+               type: string
+               description: >-
+               The custom-label field.
+             label:
+               type: string
+               description: >-
+               The label field.
+               Example : “ServiceID”  
+               
+#             User:
+#        description: >-
+#         Description of the message recipient. All requests must include one of id, phone_number, or user_ref.
+#       type: object       
+#
+#         - properties:            
+#            id:
+#               type: string
+#               description: >-
+#               The addr-uri field.
+ #              Example : “sip:serviceid@example.com”
+#             name:
+#               type: enum (SIP-URI, Email, Other)
+#               description: >-
+#               TThe addr-uri-type field.
+#               Example : “SIP-URI”             
+#            phone_number:
+#               type: string
+#               description: >-
+#               The custom-label field.
+#             user_ref:
+#               type: string
+#               description: >-
+#               The label field.
+ #              Example : “ServiceID”     
+
+ #
+
+             ValidationError:
+        description: >-
+         The UriEntry structure.
+         type: object       
+         allOf:
+          - properties:            
+            error:
+               type: string
+               description: >-
+             field:
+               type: string
+               description: >-
+               
+               WebEntry:
+        description: >-
+         The WebEntry structure.
+         type: object       
+         allOf:
+          - properties:            
+            custom-label:
+               type: string
+               description: >-
+               The custom-label field.
+             label:
+               type: enum (SIP-URI, Email, Other)
+               description: >-
+               The label field.
+               Example : “Website”            
+            url:
+               type: string
+               description: >-
+               The url field.
+               Example : “http://example.com/index.html“             
+               
+               
+               
+               
+           RequestDeviceSpecificsDTO:
+        description: >-
+         The structure to request for a one-time share of device specifics(device model, operating system version, messaging client identifier and version, and remaining battery charge in minutes). The protocol doesn’t require any fields in this DTO.
+         type: object
+               
+  
+           
+#ここまで
     Attachment:
       description: >-
         attachment object. The following can be included in the attachment object: Rich media messages including images, audios, videos, or files. Templates including generic template, button template, receipt template, or list template.

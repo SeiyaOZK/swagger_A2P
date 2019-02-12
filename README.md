@@ -30,6 +30,8 @@ $ docker-compose up
 ## 参考一覧
 ### Swaggerの記法まとめ
 https://qiita.com/rllllho/items/53a0023b32f4c0f8eabb#paths
+### OpenAPI (Swagger) 超入門
+https://qiita.com/teinen_qiita/items/e440ca7b1b52ec918f1b
 ### サンプルSwagger
 https://app.swaggerhub.com/apis/GSMA/GSMA-MaaP-API/1.0.0-oas3#/
 ### 公式サイト
